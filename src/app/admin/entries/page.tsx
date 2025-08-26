@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AdminEntriesClient from "./AdminEntriesClient";
 import Link from "next/link";
+import SignOutButton from "@/components/SignOutButton";
 
 export default async function AdminEntriesPage() {
   const session = await getServerSession(authOptions);
@@ -24,9 +25,7 @@ export default async function AdminEntriesPage() {
         </div>
         <div className="flex items-center gap-2">
           <Link href="/dashboard" className="rounded-2xl px-3 py-2 border shadow">Zum Dashboard</Link>
-          <a href="/api/auth/signout?callbackUrl=/login" className="rounded-2xl px-3 py-2 border shadow">
-            Logout
-          </a>
+        <SignOutButton />
         </div>
       </div>
 

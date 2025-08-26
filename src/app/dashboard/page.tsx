@@ -6,6 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import TimeEntriesClient from "./TimeEntriesClient";
+import SignOutButton from "@/components/SignOutButton";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
@@ -34,9 +35,7 @@ export default async function DashboardPage() {
               </Link>
             </>
           )}
-          <a href="/api/auth/signout?callbackUrl=/login" className="underline">
-            Logout
-          </a>
+        <SignOutButton />
         </div>
       </div>
 

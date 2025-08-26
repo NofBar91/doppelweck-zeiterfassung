@@ -1,5 +1,3 @@
-import withPWA from 'next-pwa';
-// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

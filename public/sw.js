@@ -1,5 +1,5 @@
-self.addEventListener('install', (e) => self.skipWaiting());
-self.addEventListener('activate', (e) => self.clients.claim());
+self.addEventListener('install', (_e) => self.skipWaiting());
+self.addEventListener('activate', (_e) => self.clients.claim());
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
