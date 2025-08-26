@@ -1,29 +1,21 @@
-import type { NextAuthOptions } from "next-auth";
+import NextAuth, { type NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { z } from "zod";
-
-const CredentialsSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET,
-  session: { strategy: "jwt" },
   providers: [
     Credentials({
       name: "Credentials",
       credentials: {
         email: { label: "E-Mail", type: "email" },
-        password: { label: "Passwort", type: "password" },
+        password: { label: "Passwort", type: "password" }
       },
       async authorize(credentials) {
-        const parsed = CredentialsSchema.safeParse(credentials);
-        if (!parsed.success) return null;
-
-        const { email, password } = parsed.data;
+        const creds = credentials as { email?: string; password?: string } | null;
+        const email = creds?.email?.toLowerCase().trim();
+        const password = creds?.password ?? "";
+        if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
         if (!user) return null;
@@ -31,22 +23,26 @@ export const authOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
 
-        return { id: user.id, name: user.name, email: user.email, role: user.role } as any;
+        return { id: user.id, name: user.name, email: user.email, role: user.role } as unknown as any;
+        // Hinweis: Die `role` kommt unten über callbacks in die Session
       },
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) {
-        token.id = (user as any).id;
-        token.role = (user as any).role;
+      if (user && "role" in user) {
+        // ts-expect-error – wir erweitern das Token um role
+        token.role = (user as { role: "ADMIN" | "EMPLOYEE" }).role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user && token) {
-        session.user.id = token.id as string;
-        session.user.role = token.role as "ADMIN" | "EMPLOYEE";
+      // session.user.id ist bei Credentials nicht automatisch gesetzt → aus token.sub
+      if (session.user) {
+        session.user.id = token.sub ?? "";
+        // ts-expect-error – custom Feld
+        session.user.role = (token as unknown as { role?: "ADMIN" | "EMPLOYEE" }).role ?? "EMPLOYEE";
       }
       return session;
     },
