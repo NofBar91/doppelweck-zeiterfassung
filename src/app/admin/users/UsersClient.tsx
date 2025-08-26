@@ -23,6 +23,7 @@ function download(filename: string, text: string, mime = "text/plain;charset=utf
   a.href = url; a.download = filename; document.body.appendChild(a);
   a.click(); a.remove(); URL.revokeObjectURL(url);
 }
+function errMsg(e: unknown) { return e instanceof Error ? e.message : "Unbekannter Fehler"; }
 
 export default function UsersClient() {
   const [users, setUsers] = React.useState<User[]>([]);
@@ -33,19 +34,15 @@ export default function UsersClient() {
   async function load() {
     setLoading(true); setError(null);
     try {
-      // Nutzer
       const u = await fetch("/api/admin/users", { cache: "no-store" });
       if (!u.ok) throw new Error(await u.text());
-      const uJson = await u.json();
-      setUsers(uJson);
+      setUsers(await u.json());
 
-      // Einladungen
       const i = await fetch("/api/admin/invites", { cache: "no-store" });
       if (!i.ok) throw new Error(await i.text());
-      const iJson = await i.json();
-      setInvites(iJson);
-    } catch (e: any) {
-      setError(e?.message ?? "Fehler beim Laden");
+      setInvites(await i.json());
+    } catch (e: unknown) {
+      setError(errMsg(e));
     } finally {
       setLoading(false);
     }
@@ -62,7 +59,6 @@ export default function UsersClient() {
     e.preventDefault();
     setBusyInvite(true); setInviteLink(null);
     try {
-      // WICHTIG: korrekter Validator-Import serverseitig = "@/lib/validators/user"
       const res = await fetch("/api/admin/invites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,8 +70,8 @@ export default function UsersClient() {
       const link = `${base}/invite/${inv.token}`;
       setInviteLink(link);
       await load();
-    } catch (e: any) {
-      alert(e?.message ?? "Einladung fehlgeschlagen");
+    } catch (e: unknown) {
+      alert(errMsg(e) || "Einladung fehlgeschlagen");
     } finally {
       setBusyInvite(false);
     }

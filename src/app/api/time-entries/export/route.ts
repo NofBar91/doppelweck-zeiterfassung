@@ -13,51 +13,32 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId") ?? undefined;
-  const from = searchParams.get("from") ?? undefined; // ISO
-  const to = searchParams.get("to") ?? undefined;     // ISO
+  const from = searchParams.get("from") ?? undefined;
+  const to = searchParams.get("to") ?? undefined;
   const location = searchParams.get("location") ?? undefined;
 
-  const where: any = {};
-  if (userId) where.userId = userId;
+  const where: Record<string, unknown> = {};
+  if (userId) (where as any).userId = userId;
   if (from || to) {
-    where.startUtc = {};
-    if (from) where.startUtc.gte = from;
-    if (to) where.startUtc.lte = to;
+    (where as any).startUtc = {};
+    if (from) (where as any).startUtc.gte = from;
+    if (to) (where as any).startUtc.lte = to;
   }
-  if (location) where.location = { contains: location, mode: "insensitive" };
+  if (location) (where as any).location = { contains: location, mode: "insensitive" };
 
   const entries = await prisma.timeEntry.findMany({
-    where,
+    where: where as any,
     include: { user: { select: { name: true, email: true } } },
     orderBy: [{ workDate: "asc" }, { startUtc: "asc" }],
   });
 
-  const headers = [
-    "Datum",
-    "Mitarbeiter",
-    "Von",
-    "Bis",
-    "Dauer (HH:MM)",
-    "Ort",
-    "Notiz",
-    "Admin geändert",
-  ];
-
+  const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer (HH:MM)","Ort","Notiz","Admin geändert"];
   const rows = entries.map(e => {
     const date = new Date(e.workDate).toLocaleDateString();
     const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const end = new Date(e.endUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const emp = e.user?.name ?? e.user?.email ?? e.userId;
-    return [
-      date,
-      emp,
-      start,
-      end,
-      minutesToHHMM(e.durationMin),
-      e.location ?? "",
-      e.note ?? "",
-      e.editedByAdmin ? "ja" : "nein",
-    ];
+    return [date, emp, start, end, minutesToHHMM(e.durationMin), e.location ?? "", e.note ?? "", e.editedByAdmin ? "ja" : "nein"];
   });
 
   const csv = toCSV(headers, rows);

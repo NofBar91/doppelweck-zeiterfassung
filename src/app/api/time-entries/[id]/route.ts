@@ -10,22 +10,17 @@ import { TimeEntryUpdateSchema, TimeEntryStatusEnum } from "@/lib/validators/tim
 import { calcDurationMin } from "@/lib/utils/time";
 import { z } from "zod";
 
-// kleine Helper, damit es auch ohne generierte status-Typen kompiliert
-type MaybeStatus = z.infer<typeof TimeEntryStatusEnum> | undefined;
-function getStatus(entry: any): z.infer<typeof TimeEntryStatusEnum> {
-  const s = entry?.status;
+type Status = z.infer<typeof TimeEntryStatusEnum>;
+function getStatus(entry: unknown): Status {
+  const s = (entry as { status?: string } | null)?.status;
   return s === "SUBMITTED" || s === "APPROVED" || s === "REJECTED" ? s : "DRAFT";
 }
-function getLockedAt(entry: any): Date | null {
-  return entry?.lockedAt ?? null;
+function getLockedAt(entry: unknown): Date | null {
+  const v = (entry as { lockedAt?: Date | null } | null)?.lockedAt;
+  return v ?? null;
 }
 
-// Darf ein Mitarbeiter (kein Admin) den Status auf "target" setzen?
-function employeeStatusAllowed(
-  current: z.infer<typeof TimeEntryStatusEnum>,
-  target: z.infer<typeof TimeEntryStatusEnum>
-) {
-  // Mitarbeiter darf nur DRAFT/REJECTED -> SUBMITTED
+function employeeStatusAllowed(current: Status, target: Status) {
   return target === "SUBMITTED" && (current === "DRAFT" || current === "REJECTED");
 }
 
@@ -37,7 +32,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const existing = await prisma.timeEntry.findUnique({ where: { id } });
   if (!existing) return new Response("Not found", { status: 404 });
 
-  // Berechtigung
   if (!canEditEntry(session, existing.userId)) return new Response("Forbidden", { status: 403 });
 
   const json = await req.json().catch(() => null);
@@ -45,25 +39,20 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!parsed.success) return new Response("Invalid payload", { status: 400 });
   const patch = parsed.data;
 
-  // aktuelle Status/Lock aus ggf. älteren Typen holen (fallbacks)
   const currentStatus = getStatus(existing);
   const currentLockedAt = getLockedAt(existing);
 
-  // APPROVED: für Mitarbeiter gesperrt
   if (currentStatus === "APPROVED" && !isAdmin(session)) {
     return new Response("Eintrag ist freigegeben und gesperrt.", { status: 403 });
   }
 
-  // Mitarbeiter-Statuswechsel nur in eine Richtung erlaubt
-  if (!isAdmin(session) && (patch.status as MaybeStatus) && !employeeStatusAllowed(currentStatus, patch.status!)) {
+  if (!isAdmin(session) && patch.status && !employeeStatusAllowed(currentStatus, patch.status)) {
     return new Response("Status-Änderung nicht erlaubt.", { status: 403 });
   }
 
-  // Zeiten bestimmen (nur wenn mitgeschickt)
   const nextStart = patch.startUtc ? new Date(patch.startUtc) : existing.startUtc;
   const nextEnd = patch.endUtc ? new Date(patch.endUtc) : existing.endUtc;
 
-  // Dauer prüfen
   let durationMin: number;
   try {
     durationMin = calcDurationMin(nextStart.toISOString(), nextEnd.toISOString());
@@ -73,7 +62,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return new Response("Ungültige Zeitspanne", { status: 400 });
   }
 
-  // Overlap-Check nur bei Zeitänderung
   if (patch.startUtc || patch.endUtc) {
     const overlap = await prisma.timeEntry.findFirst({
       where: {
@@ -86,35 +74,38 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (overlap) return new Response("Zeit überschneidet sich mit bestehendem Eintrag", { status: 400 });
   }
 
-  // Update-Daten aufbauen
-  const data: any = {
+  const data: {
+    startUtc: Date;
+    endUtc: Date;
+    durationMin: number;
+    workDate?: Date;
+    location?: string;
+    note?: string;
+    status?: Status;
+    lockedAt?: Date | null;
+    editedByAdmin?: boolean;
+  } = {
     startUtc: nextStart,
     endUtc: nextEnd,
     durationMin,
   };
   if (patch.workDate !== undefined) data.workDate = new Date(patch.workDate);
-  if (patch.location !== undefined) data.location = patch.location; // "" erlaubt
-  if (patch.note !== undefined) data.note = patch.note; // "" erlaubt
+  if (patch.location !== undefined) data.location = patch.location;
+  if (patch.note !== undefined) data.note = patch.note;
 
-  // Statuswechsel inkl. Lock-Handling
   if (patch.status) {
     data.status = patch.status;
-    if (patch.status === "APPROVED") {
-      data.lockedAt = new Date();
-    } else if (patch.status === "REJECTED" || patch.status === "SUBMITTED") {
-      data.lockedAt = null;
-    }
+    if (patch.status === "APPROVED") data.lockedAt = new Date();
+    else if (patch.status === "REJECTED" || patch.status === "SUBMITTED") data.lockedAt = null;
   }
 
-  // Markierung, falls Admin editiert
   if (isAdmin(session)) data.editedByAdmin = true;
 
   const updated = await prisma.timeEntry.update({ where: { id }, data });
 
-  // Audit für Admin (Status safe auslesen; falls Feld noch nicht existiert, auf null fallbacken)
   if (isAdmin(session)) {
-    const beforeStatus = (existing as any)?.status ?? null;
-    const afterStatus = (updated as any)?.status ?? null;
+    const beforeStatus = (existing as { status?: string } | null)?.status ?? null;
+    const afterStatus = (updated as { status?: string } | null)?.status ?? null;
     await prisma.auditLog.create({
       data: {
         actorId: session.user.id,
@@ -157,7 +148,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   if (!canEditEntry(session, existing.userId)) return new Response("Forbidden", { status: 403 });
 
-  // optional: Mitarbeiter dürfen APPROVED nicht löschen
   const existingStatus = getStatus(existing);
   if ((existingStatus === "APPROVED" || existingStatus === "SUBMITTED") && !isAdmin(session)) {
     return new Response("Freigegebene Einträge sind gesperrt und können nicht gelöscht werden.", { status: 403 });
@@ -167,12 +157,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 
   if (isAdmin(session)) {
     await prisma.auditLog.create({
-      data: {
-        actorId: session.user.id,
-        targetId: id,
-        action: "DELETE_TIME",
-        diff: {}, // Pflichtfeld erfüllt
-      },
+      data: { actorId: session.user.id, targetId: id, action: "DELETE_TIME", diff: {} },
     });
   }
 

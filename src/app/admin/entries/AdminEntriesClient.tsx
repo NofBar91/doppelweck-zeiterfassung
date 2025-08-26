@@ -3,7 +3,6 @@ import React from "react";
 import { minutesToHHMM, isoToLocalDateInput, isoToLocalTimeInput } from "@/lib/timezone";
 import { toCSV } from "@/lib/csv";
 
-
 type User = { id: string; name: string | null; email: string | null; role: string };
 type Entry = {
   id: string;
@@ -20,6 +19,7 @@ type Entry = {
 };
 
 function sumMinutes(rows: Entry[]) { return rows.reduce((a, b) => a + (b.durationMin || 0), 0); }
+function errMsg(e: unknown) { return e instanceof Error ? e.message : "Unbekannter Fehler"; }
 
 export default function AdminEntriesClient() {
   const [users, setUsers] = React.useState<User[]>([]);
@@ -42,7 +42,7 @@ export default function AdminEntriesClient() {
         const res = await fetch("/api/users", { cache: "no-store" });
         if (!res.ok) throw new Error(await res.text());
         setUsers(await res.json());
-      } catch (e: any) { setUsersError(e.message ?? "Fehler beim Laden der Mitarbeiter"); }
+      } catch (e: unknown) { setUsersError(errMsg(e)); }
       finally { setLoadingUsers(false); }
     })();
   }, []);
@@ -59,7 +59,7 @@ export default function AdminEntriesClient() {
       const res = await fetch(`/api/time-entries?admin=1&${sp.toString()}`, { cache: "no-store" });
       if (!res.ok) throw new Error(await res.text());
       setEntries(await res.json());
-    } catch (e: any) { setError(e.message ?? "Fehler beim Laden"); }
+    } catch (e: unknown) { setError(errMsg(e)); }
     finally { setLoading(false); }
   }, [filters]);
 
@@ -90,7 +90,7 @@ export default function AdminEntriesClient() {
       });
       if (!res.ok) throw new Error(await res.text());
       setEditingId(null); setEdit(null); await load();
-    } catch (e: any) { alert(e.message ?? "Speichern fehlgeschlagen"); }
+    } catch (e: unknown) { alert(errMsg(e) || "Speichern fehlgeschlagen"); }
   }
   function cancelEdit() { setEditingId(null); setEdit(null); }
 
@@ -100,7 +100,7 @@ export default function AdminEntriesClient() {
       const res = await fetch(`/api/time-entries/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error(await res.text());
       setConfirmId(null); await load();
-    } catch (e: any) { alert(e?.message ?? "Löschen fehlgeschlagen"); }
+    } catch (e: unknown) { alert(errMsg(e) || "Löschen fehlgeschlagen"); }
   }
 
   async function setStatus(id: string, status: Entry["status"]) {
@@ -112,41 +112,35 @@ export default function AdminEntriesClient() {
       });
       if (!res.ok) throw new Error(await res.text());
       await load();
-    } catch (e: any) { alert(e?.message ?? "Status-Änderung fehlgeschlagen"); }
+    } catch (e: unknown) { alert(errMsg(e) || "Status-Änderung fehlgeschlagen"); }
   }
-
 
   const total = minutesToHHMM(sumMinutes(entries));
 
   function downloadTextFile(filename: string, text: string) {
-  const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
+    const blob = new Blob([text], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename; document.body.appendChild(a);
+    a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
 
-function exportCsv() {
-  const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer","Ort","Notiz","Status","Admin*"];
-  const rows = entries.map(e => {
-    const date = new Date(e.startUtc).toLocaleDateString();
-    const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const end   = new Date(e.endUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const duration = minutesToHHMM(e.durationMin);
-    const user = e.user?.name ?? e.user?.email ?? e.userId;
-    const status = (e as any).status ?? "DRAFT"; // falls Client-Typ alt ist
-    return [date, user, start, end, duration, e.location ?? "", e.note ?? "", status, e.editedByAdmin ? "*" : ""];
-  });
+  function exportCsv() {
+    const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer","Ort","Notiz","Status","Admin*"];
+    const rows = entries.map(e => {
+      const date = new Date(e.startUtc).toLocaleDateString();
+      const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const end   = new Date(e.endUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const duration = minutesToHHMM(e.durationMin);
+      const user = e.user?.name ?? e.user?.email ?? e.userId;
+      const status = (e as Partial<Entry>).status ?? "DRAFT";
+      return [date, user, start, end, duration, e.location ?? "", e.note ?? "", status, e.editedByAdmin ? "*" : ""];
+    });
 
-  const csv = toCSV(headers, rows);
-  const stamp = new Date().toISOString().slice(0,10);
-  downloadTextFile(`arbeitszeiten_${stamp}.csv`, csv);
-}
-
+    const csv = toCSV(headers, rows);
+    const stamp = new Date().toISOString().slice(0,10);
+    downloadTextFile(`arbeitszeiten_${stamp}.csv`, csv);
+  }
 
   return (
     <div className="space-y-4">
@@ -226,7 +220,7 @@ function exportCsv() {
                 const end = isoToLocalTimeInput(e.endUtc);
                 const duration = minutesToHHMM(e.durationMin);
                 const isEditing = editingId === e.id;
-                const editable = e.status !== "APPROVED"; // SUBMITTED darf Admin noch ändern
+                const editable = e.status !== "APPROVED";
                 return (
                   <tr key={e.id} className="border-b align-top">
                     <td className="py-2 pr-4 whitespace-nowrap">{date}</td>
@@ -270,14 +264,12 @@ function exportCsv() {
                             aria-disabled={!editable} title={!editable ? "Freigegebene Einträge sind gesperrt" : undefined}>
                             Bearbeiten
                           </button>
-                          {/* Approve/Reject */}
                           {e.status !== "APPROVED" && (
                             <button className="underline" onClick={()=> setStatus(e.id, "APPROVED")}>Freigeben</button>
                           )}
                           {e.status !== "REJECTED" && (
                             <button className="underline" onClick={()=> setStatus(e.id, "REJECTED")}>Ablehnen</button>
                           )}
-                          {/* Löschen */}
                           {confirmId === e.id ? (
                             <>
                               <button className="text-red-600 underline" onClick={()=>handleDelete(e.id)}>Löschen bestätigen</button>
