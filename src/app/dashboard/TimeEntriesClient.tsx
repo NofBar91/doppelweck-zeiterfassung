@@ -1,12 +1,11 @@
 "use client";
 import React from "react";
-import {
-  minutesToHHMM,
-  toUtcIso,
-  dateOnlyUtcIso,
-  isoToLocalDateInput,
-  isoToLocalTimeInput,
-} from "@/lib/timezone";
+import { minutesToHHMM, toUtcIso, dateOnlyUtcIso, isoToLocalDateInput, isoToLocalTimeInput } from "@/lib/timezone";
+
+type Role = "ADMIN" | "EMPLOYEE";
+type Status = "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
+
+type UserLite = { id: string; name: string | null; email: string | null };
 
 type Entry = {
   id: string;
@@ -20,8 +19,8 @@ type Entry = {
   editedByAdmin: boolean;
   createdAt: string;
   updatedAt: string;
-  status?: "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
-  user?: { id: string; name: string | null; email: string | null };
+  status?: Status; // kann fehlen, default DRAFT
+  user?: UserLite;
 };
 
 function useEntries() {
@@ -34,10 +33,10 @@ function useEntries() {
       setLoading(true);
       const res = await fetch("/api/time-entries", { cache: "no-store" });
       if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
+      const data = (await res.json()) as Entry[];
       setEntries(data);
-    } catch (e: any) {
-      setError(e.message ?? "Fehler beim Laden");
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : "Fehler beim Laden");
     } finally {
       setLoading(false);
     }
@@ -51,9 +50,9 @@ function useEntries() {
 type FormState = {
   mode: "create" | "edit";
   id?: string;
-  date: string; // YYYY-MM-DD (lokal)
-  start: string; // HH:MM (lokal)
-  end: string;   // HH:MM (lokal)
+  date: string;   // YYYY-MM-DD
+  start: string;  // HH:MM
+  end: string;    // HH:MM
   location: string;
   note: string;
 };
@@ -86,47 +85,20 @@ export default function TimeEntriesClient() {
       const e = new Date(`${form.date}T${form.end}:00`);
       const diff = Math.round((+e - +s) / 60000);
       return diff > 0 ? diff : 0;
-    } catch { return 0; }
+    } catch {
+      return 0;
+    }
   }, [form.date, form.start, form.end]);
 
-  // === Einreichen: Tag & Monat ===
+  // Monat einreichen
   const now = new Date();
   const defaultMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const defaultDate = (() => {
-    const yyyy = now.getFullYear();
-    const mm = String(now.getMonth() + 1).padStart(2, "0");
-    const dd = String(now.getDate()).padStart(2, "0");
-    return `${yyyy}-${mm}-${dd}`;
-  })();
+  const [submitMonth, setSubmitMonth] = React.useState<string>(defaultMonth);
+  const [submitting, setSubmitting] = React.useState(false);
 
-  const [submitMonth, setSubmitMonth] = React.useState(defaultMonth);
-  const [submitDate, setSubmitDate] = React.useState(defaultDate);
-  const [submittingDay, setSubmittingDay] = React.useState(false);
-  const [submittingMonth, setSubmittingMonth] = React.useState(false);
-
-  async function submitDay() {
-    if (!submitDate) return;
-    if (!confirm(`Alle DRAFT/REJECTED-Einträge am ${submitDate} einreichen?`)) return;
-    setSubmittingDay(true);
-    try {
-      const res = await fetch("/api/time-entries/submit-day", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: submitDate }),
-      });
-      if (!res.ok) throw new Error(await res.text());
-      await reload();
-    } catch (e: any) {
-      alert(e?.message ?? "Einreichen (Tag) fehlgeschlagen");
-    } finally {
-      setSubmittingDay(false);
-    }
-  }
-
-  async function submitMonthAction() {
-    if (!submitMonth) return;
+  async function submitCurrentMonth() {
     if (!confirm(`Alle DRAFT/REJECTED-Einträge für ${submitMonth} einreichen?`)) return;
-    setSubmittingMonth(true);
+    setSubmitting(true);
     try {
       const res = await fetch("/api/time-entries/submit", {
         method: "POST",
@@ -135,10 +107,32 @@ export default function TimeEntriesClient() {
       });
       if (!res.ok) throw new Error(await res.text());
       await reload();
-    } catch (e: any) {
-      alert(e?.message ?? "Einreichen (Monat) fehlgeschlagen");
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Einreichen fehlgeschlagen");
     } finally {
-      setSubmittingMonth(false);
+      setSubmitting(false);
+    }
+  }
+
+  // Tag einreichen
+  const [submitDay, setSubmitDay] = React.useState<string>(defaultForm().date);
+  const [submittingDay, setSubmittingDay] = React.useState(false);
+
+  async function submitSingleDay() {
+    if (!confirm(`Alle DRAFT/REJECTED-Einträge am ${submitDay} einreichen?`)) return;
+    setSubmittingDay(true);
+    try {
+      const res = await fetch("/api/time-entries/submit-day", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: submitDay }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      await reload();
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Einreichen fehlgeschlagen");
+    } finally {
+      setSubmittingDay(false);
     }
   }
 
@@ -148,11 +142,6 @@ export default function TimeEntriesClient() {
   }
 
   function openEdit(entry: Entry) {
-    const status = entry.status ?? "DRAFT";
-    if (status === "APPROVED" || status === "SUBMITTED") {
-      alert("Dieser Eintrag ist eingereicht/freigegeben und gesperrt.");
-      return;
-    }
     setForm({
       mode: "edit",
       id: entry.id,
@@ -165,8 +154,8 @@ export default function TimeEntriesClient() {
     setOpen(true);
   }
 
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSave(ev: React.FormEvent<HTMLFormElement>) {
+    ev.preventDefault();
     if (busy) return;
     setBusy(true);
     try {
@@ -174,8 +163,8 @@ export default function TimeEntriesClient() {
         workDate: dateOnlyUtcIso(form.date),
         startUtc: toUtcIso(form.date, form.start),
         endUtc: toUtcIso(form.date, form.end),
-        location: form.location,
-        note: form.note,
+        location: form.location || undefined,
+        note: form.note || undefined,
       };
       if (form.mode === "create") {
         const res = await fetch("/api/time-entries", {
@@ -194,82 +183,73 @@ export default function TimeEntriesClient() {
       }
       setOpen(false);
       await reload();
-    } catch (e: any) {
-      alert(e.message ?? "Fehler beim Speichern");
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Fehler beim Speichern");
     } finally {
       setBusy(false);
     }
   }
 
-  async function handleDelete(id: string, status?: Entry["status"]) {
-    if (status === "APPROVED" || status === "SUBMITTED") {
-      alert("Eingereichte/freigegebene Einträge sind gesperrt und können nicht gelöscht werden.");
-      return;
-    }
+  async function handleDelete(id: string) {
     if (confirmId !== id) { setConfirmId(id); return; }
     try {
       const res = await fetch(`/api/time-entries/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error(await res.text());
       setEntries((prev) => prev.filter((x) => x.id !== id));
       setConfirmId(null);
-    } catch (e: any) {
-      alert(e.message ?? "Löschen fehlgeschlagen");
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : "Löschen fehlgeschlagen");
     }
   }
 
   return (
     <div className="space-y-4">
-      {/* Toolbar: Einreichen & Neuer Eintrag */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="flex items-center justify-between gap-2">
         <h2 className="text-xl font-semibold">Meine Arbeitszeiten</h2>
+        <button
+          onClick={openCreate}
+          className="rounded-2xl px-4 py-2 border shadow"
+          aria-label="Neuer Eintrag"
+        >
+          Neuer Eintrag
+        </button>
+      </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Tag einreichen */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="submit-date" className="text-sm">Tag</label>
-            <input
-              id="submit-date"
-              type="date"
-              className="border rounded px-3 py-2"
-              value={submitDate}
-              onChange={(e) => setSubmitDate(e.target.value)}
-            />
-            <button
-              onClick={submitDay}
-              disabled={submittingDay}
-              className="rounded-2xl px-3 py-2 border shadow"
-            >
-              {submittingDay ? "Reiche ein…" : "Tag einreichen"}
-            </button>
-          </div>
-
-          {/* Monat einreichen */}
-          <div className="flex items-center gap-2">
-            <label htmlFor="submit-month" className="text-sm">Monat</label>
-            <input
-              id="submit-month"
-              type="month"
-              className="border rounded px-3 py-2"
-              value={submitMonth}
-              onChange={(e) => setSubmitMonth(e.target.value)}
-            />
-            <button
-              onClick={submitMonthAction}
-              disabled={submittingMonth}
-              className="rounded-2xl px-3 py-2 border shadow"
-            >
-              {submittingMonth ? "Reiche ein…" : "Monat einreichen"}
-            </button>
-          </div>
-
-          <button
-            onClick={openCreate}
-            className="rounded-2xl px-3 py-2 border shadow"
-            aria-label="Neuer Eintrag"
-          >
-            Neuer Eintrag
-          </button>
+      {/* Einreichen: Monat & Tag */}
+      <div className="flex flex-wrap gap-3 items-end">
+        <div>
+          <label className="block text-sm">Monat einreichen</label>
+          <input
+            type="month"
+            value={submitMonth}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubmitMonth(e.target.value)}
+            className="border rounded px-3 py-2"
+          />
         </div>
+        <button
+          onClick={submitCurrentMonth}
+          disabled={submitting}
+          className="rounded-2xl px-4 py-2 border shadow"
+        >
+          {submitting ? "Reiche ein…" : "Alle im Monat einreichen"}
+        </button>
+
+        <div className="ml-4">
+          <label className="block text-sm">Tag einreichen</label>
+          <input
+            type="date"
+            value={submitDay}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubmitDay(e.target.value)}
+            className="border rounded px-3 py-2"
+          />
+        </div>
+        <button
+          onClick={submitSingleDay}
+          disabled={submittingDay}
+          className="rounded-2xl px-4 py-2 border shadow"
+        >
+          {submittingDay ? "Reiche ein…" : "Diesen Tag einreichen"}
+        </button>
       </div>
 
       {loading && <p>Daten werden geladen…</p>}
@@ -290,7 +270,6 @@ export default function TimeEntriesClient() {
                 <th className="py-2 pr-4">Dauer</th>
                 <th className="py-2 pr-4">Ort</th>
                 <th className="py-2 pr-4">Notiz</th>
-                <th className="py-2 pr-4">Status</th>
                 <th className="py-2 pr-4">Aktionen</th>
               </tr>
             </thead>
@@ -300,8 +279,7 @@ export default function TimeEntriesClient() {
                 const date = d.toLocaleDateString();
                 const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
                 const end = new Date(e.endUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
-                const status = e.status ?? "DRAFT";
+                const status: Status = e.status ?? "DRAFT";
                 const locked = status === "SUBMITTED" || status === "APPROVED";
 
                 return (
@@ -310,60 +288,19 @@ export default function TimeEntriesClient() {
                     <td className="py-2 pr-4">{start}</td>
                     <td className="py-2 pr-4">{end}</td>
                     <td className="py-2 pr-4">{minutesToHHMM(e.durationMin)}</td>
-                    <td className="py-2 pr-4 max-w-[12rem] truncate" title={e.location ?? ""}>
-                      {e.location}
-                    </td>
-                    <td className="py-2 pr-4 max-w-[16rem] truncate" title={e.note ?? ""}>
-                      {e.note}
-                    </td>
-                    <td className="py-2 pr-4">
-                      <span
-                        className={
-                          "inline-block rounded-full px-2 py-0.5 text-xs " +
-                          (status === "APPROVED"
-                            ? "bg-green-100 text-green-800"
-                            : status === "SUBMITTED"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : status === "REJECTED"
-                            ? "bg-red-100 text-red-800"
-                            : "bg-gray-100 text-gray-800")
-                        }
-                      >
-                        {status}
-                      </span>
-                    </td>
+                    <td className="py-2 pr-4 max-w-[12rem] truncate" title={e.location ?? ""}>{e.location}</td>
+                    <td className="py-2 pr-4 max-w-[16rem] truncate" title={e.note ?? ""}>{e.note}</td>
                     <td className="py-2 pr-4 space-x-2 whitespace-nowrap">
-                      <button
-                        className="underline disabled:text-gray-400"
-                        onClick={() => openEdit(e)}
-                        disabled={locked}
-                        title={locked ? "Eingereicht/freigegeben – gesperrt" : undefined}
-                      >
-                        Bearbeiten
-                      </button>
-                      {confirmId === e.id ? (
+                      <button className="underline" onClick={() => openEdit(e)} disabled={locked}>Bearbeiten</button>
+                      {locked ? (
+                        <span className="text-gray-400">gesperrt</span>
+                      ) : confirmId === e.id ? (
                         <>
-                          <button
-                            className="text-red-600 underline disabled:text-gray-400"
-                            onClick={() => handleDelete(e.id, status)}
-                            disabled={locked}
-                            title={locked ? "Eingereicht/freigegeben – gesperrt" : undefined}
-                          >
-                            Löschen bestätigen
-                          </button>
-                          <button className="underline" onClick={() => setConfirmId(null)}>
-                            Abbrechen
-                          </button>
+                          <button className="text-red-600 underline" onClick={() => handleDelete(e.id)}>Löschen bestätigen</button>
+                          <button className="underline" onClick={() => setConfirmId(null)}>Abbrechen</button>
                         </>
                       ) : (
-                        <button
-                          className="text-red-600 underline disabled:text-gray-400"
-                          onClick={() => setConfirmId(e.id)}
-                          disabled={locked}
-                          title={locked ? "Eingereicht/freigegeben – gesperrt" : undefined}
-                        >
-                          Löschen
-                        </button>
+                        <button className="text-red-600 underline" onClick={() => setConfirmId(e.id)}>Löschen</button>
                       )}
                     </td>
                   </tr>
@@ -378,7 +315,6 @@ export default function TimeEntriesClient() {
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center p-4" role="dialog" aria-modal="true">
           <form onSubmit={handleSave} className="w-full max-w-md space-y-4 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow">
             <h3 className="text-lg font-semibold">{form.mode === "create" ? "Neuer Eintrag" : "Eintrag bearbeiten"}</h3>
-
             <div>
               <label htmlFor="date" className="block text-sm">Datum</label>
               <input id="date" type="date" className="w-full border rounded px-3 py-2" value={form.date} onChange={(e)=>setForm({...form, date: e.target.value})} required />
@@ -393,9 +329,7 @@ export default function TimeEntriesClient() {
                 <input id="end" type="time" className="w-full border rounded px-3 py-2" value={form.end} onChange={(e)=>setForm({...form, end: e.target.value})} required />
               </div>
             </div>
-
             <p className="text-sm">Dauer: <b>{minutesToHHMM(durationMin)}</b></p>
-
             <div>
               <label htmlFor="location" className="block text-sm">Ort</label>
               <input id="location" className="w-full border rounded px-3 py-2" value={form.location} onChange={(e)=>setForm({...form, location: e.target.value})} placeholder="z. B. Büro Berlin" />
@@ -404,7 +338,6 @@ export default function TimeEntriesClient() {
               <label htmlFor="note" className="block text-sm">Notiz</label>
               <textarea id="note" className="w-full border rounded px-3 py-2" value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} rows={3} />
             </div>
-
             <div className="flex items-center justify-end gap-2">
               <button type="button" className="rounded-2xl px-4 py-2 border" onClick={()=>setOpen(false)}>Abbrechen</button>
               <button type="submit" disabled={busy} className="rounded-2xl px-4 py-2 border shadow">

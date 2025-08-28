@@ -5,6 +5,7 @@ import { isAdmin } from "@/lib/authz";
 import { toCSV } from "@/lib/csv";
 import { NextRequest } from "next/server";
 import { minutesToHHMM } from "@/lib/timezone";
+import type { Prisma } from "@prisma/client";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -13,27 +14,27 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const userId = searchParams.get("userId") ?? undefined;
-  const from = searchParams.get("from") ?? undefined;
-  const to = searchParams.get("to") ?? undefined;
-  const location = searchParams.get("location") ?? undefined;
+  const fromIso = searchParams.get("from") ?? undefined;
+  const toIso = searchParams.get("to") ?? undefined;
+  const locationPart = searchParams.get("location") ?? undefined;
 
-  const where: Record<string, unknown> = {};
-  if (userId) (where as any).userId = userId;
-  if (from || to) {
-    (where as any).startUtc = {};
-    if (from) (where as any).startUtc.gte = from;
-    if (to) (where as any).startUtc.lte = to;
+  const where: Prisma.TimeEntryWhereInput = {};
+  if (userId) where.userId = userId;
+  if (fromIso || toIso) {
+    where.startUtc = {};
+    if (fromIso) where.startUtc.gte = fromIso;
+    if (toIso) where.startUtc.lte = toIso;
   }
-  if (location) (where as any).location = { contains: location, mode: "insensitive" };
+  if (locationPart) where.location = { contains: locationPart };
 
   const entries = await prisma.timeEntry.findMany({
-    where: where as any,
+    where,
     include: { user: { select: { name: true, email: true } } },
     orderBy: [{ workDate: "asc" }, { startUtc: "asc" }],
   });
 
-  const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer (HH:MM)","Ort","Notiz","Admin geändert"];
-  const rows = entries.map(e => {
+  const headers = ["Datum", "Mitarbeiter", "Von", "Bis", "Dauer (HH:MM)", "Ort", "Notiz", "Admin geändert"];
+  const rows = entries.map((e) => {
     const date = new Date(e.workDate).toLocaleDateString();
     const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
     const end = new Date(e.endUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -42,7 +43,7 @@ export async function GET(req: NextRequest) {
   });
 
   const csv = toCSV(headers, rows);
-  const filename = `zeitnachweise_${new Date().toISOString().slice(0,10)}.csv`;
+  const filename = `zeitnachweise_${new Date().toISOString().slice(0, 10)}.csv`;
 
   return new Response(csv, {
     status: 200,

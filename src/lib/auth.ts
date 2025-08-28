@@ -1,7 +1,16 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session, User as NextAuthUser } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import type { JWT } from "next-auth/jwt";
+import type { Role } from "@prisma/client";
+
+type UserWithRole = {
+  id: string;
+  name: string | null;
+  email: string | null;
+  role: Role;
+};
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -11,10 +20,9 @@ export const authOptions: NextAuthOptions = {
         email: { label: "E-Mail", type: "email" },
         password: { label: "Passwort", type: "password" }
       },
-      async authorize(credentials) {
-        const creds = credentials as { email?: string; password?: string } | null;
-        const email = creds?.email?.toLowerCase().trim();
-        const password = creds?.password ?? "";
+      async authorize(credentials): Promise<NextAuthUser | null> {
+        const email = credentials?.email?.toLowerCase().trim();
+        const password = credentials?.password ?? "";
         if (!email || !password) return null;
 
         const user = await prisma.user.findUnique({ where: { email } });
@@ -23,31 +31,36 @@ export const authOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
 
-        return { id: user.id, name: user.name, email: user.email, role: user.role } as unknown as any;
-        // Hinweis: Die `role` kommt unten über callbacks in die Session
+        const u: UserWithRole = {
+          id: user.id,
+          name: user.name ?? null,
+          email: user.email,
+          role: user.role,
+        };
+        return u as unknown as NextAuthUser; // kein any
       },
     }),
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }) {
-      if (user && "role" in user) {
-        // ts-expect-error – wir erweitern das Token um role
-        token.role = (user as { role: "ADMIN" | "EMPLOYEE" }).role;
+    async jwt({ token, user }): Promise<JWT> {
+      if (user) {
+        const r = (user as unknown as Partial<UserWithRole>).role;
+        if (r) {
+          (token as JWT & { role?: Role }).role = r;
+        }
       }
       return token;
     },
-    async session({ session, token }) {
-      // session.user.id ist bei Credentials nicht automatisch gesetzt → aus token.sub
+    async session({ session, token }): Promise<Session> {
       if (session.user) {
         session.user.id = token.sub ?? "";
-        // ts-expect-error – custom Feld
-        session.user.role = (token as unknown as { role?: "ADMIN" | "EMPLOYEE" }).role ?? "EMPLOYEE";
+        const r = (token as JWT & { role?: Role }).role;
+        // ts-expect-error custom Feld auf user
+        session.user.role = r ?? "EMPLOYEE";
       }
       return session;
     },
   },
-  pages: {
-    signIn: "/login",
-  },
+  pages: { signIn: "/login" },
 };
