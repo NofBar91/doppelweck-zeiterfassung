@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubmitDaySchema } from "@/lib/validators/timeEntry";
+import { Prisma, TimeEntryStatus } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -12,35 +13,32 @@ export async function POST(req: NextRequest) {
   const parsed = SubmitDaySchema.safeParse(body);
   if (!parsed.success) return new Response("Invalid payload", { status: 400 });
 
-  // YYYY-MM-DD
-  const { date } = parsed.data;
+  const { date } = parsed.data; // YYYY-MM-DD
   const [y, m, d] = date.split("-").map(Number);
 
-  // UTC-Grenzen des Tages
   const from = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0));
   const to   = new Date(Date.UTC(y, m - 1, d, 23, 59, 59, 999));
 
-  // 1) Versuch: über workDate (dein "Tagesanker")
+  const whereWorkDate: Prisma.TimeEntryWhereInput = {
+    userId: session.user.id,
+    workDate: { gte: from, lte: to },
+    status: { in: [TimeEntryStatus.DRAFT, TimeEntryStatus.REJECTED] },
+  };
   const resWorkDate = await prisma.timeEntry.updateMany({
-    where: {
-      userId: session.user.id,
-      workDate: { gte: from, lte: to },
-      // Cast bis der Prisma-Client die Typen sicher kennt
-      ...( { status: { in: ["DRAFT", "REJECTED"] } } as any ),
-    },
-    data: ( { status: "SUBMITTED", lockedAt: null } as any ),
+    where: whereWorkDate,
+    data: { status: TimeEntryStatus.SUBMITTED, lockedAt: null },
   });
 
-  // 2) Falls nichts aktualisiert wurde: zusätzlich über startUtc im Tagesbereich
   let resStartUtcCount = 0;
   if (resWorkDate.count === 0) {
+    const whereStartUtc: Prisma.TimeEntryWhereInput = {
+      userId: session.user.id,
+      startUtc: { gte: from, lte: to },
+      status: { in: [TimeEntryStatus.DRAFT, TimeEntryStatus.REJECTED] },
+    };
     const resStartUtc = await prisma.timeEntry.updateMany({
-      where: {
-        userId: session.user.id,
-        startUtc: { gte: from, lte: to },
-        ...( { status: { in: ["DRAFT", "REJECTED"] } } as any ),
-      },
-      data: ( { status: "SUBMITTED", lockedAt: null } as any ),
+      where: whereStartUtc,
+      data: { status: TimeEntryStatus.SUBMITTED, lockedAt: null },
     });
     resStartUtcCount = resStartUtc.count;
   }

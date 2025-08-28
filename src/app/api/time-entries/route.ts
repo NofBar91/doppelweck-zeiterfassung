@@ -1,6 +1,3 @@
-// ─────────────────────────────────────────────────────────────
-// FILE: src/app/api/time-entries/route.ts
-// ─────────────────────────────────────────────────────────────
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -8,6 +5,14 @@ import { prisma } from "@/lib/prisma";
 import { TimeEntryCreateSchema } from "@/lib/validators/timeEntry";
 import { calcDurationMin } from "@/lib/utils/time";
 import { isAdmin } from "@/lib/authz";
+import type { Prisma, TimeEntryStatus as TES } from "@prisma/client";
+
+// String-Literal-Guard für Query-Param
+type StatusLiteral = "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
+const STATUSES: readonly StatusLiteral[] = ["DRAFT", "SUBMITTED", "APPROVED", "REJECTED"] as const;
+function isStatus(x: string): x is StatusLiteral {
+  return (STATUSES as readonly string[]).includes(x);
+}
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -16,17 +21,14 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const adminView = isAdmin(session) && searchParams.get("admin") === "1";
 
-  // Default: nur eigene Einträge
-  const where: any = adminView ? {} : { userId: session.user.id };
+  const where: Prisma.TimeEntryWhereInput = adminView ? {} : { userId: session.user.id };
 
-  // Nur in Admin-Ansicht globale Filter erlauben
   if (adminView) {
     const userId = searchParams.get("userId");
     const from = searchParams.get("from");
     const to = searchParams.get("to");
     const location = searchParams.get("location");
-    const status = searchParams.get("status") as
-      | "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED" | null;
+    const statusParam = searchParams.get("status");
 
     if (userId) where.userId = userId;
     if (from || to) {
@@ -34,8 +36,12 @@ export async function GET(req: NextRequest) {
       if (from) where.startUtc.gte = from;
       if (to) where.startUtc.lte = to;
     }
-    if (location) where.location = { contains: location, mode: "insensitive" };
-    if (status) where.status = status;
+    if (location) where.location = { contains: location }; // kein mode
+
+    // Wichtig: Prisma erwartet hier den Enum-WERT direkt
+    if (statusParam && isStatus(statusParam)) {
+      where.status = statusParam as TES;
+    }
   }
 
   const entries = await prisma.timeEntry.findMany({
@@ -78,6 +84,7 @@ export async function POST(req: NextRequest) {
   });
   if (overlap) return new Response("Zeit überschneidet sich mit bestehendem Eintrag", { status: 400 });
 
+  // Status nicht setzen → DB-Default (DRAFT) greift
   const created = await prisma.timeEntry.create({
     data: {
       userId: session.user.id,
@@ -87,7 +94,7 @@ export async function POST(req: NextRequest) {
       durationMin,
       location: location ?? "",
       note: note ?? "",
-      editedByAdmin: false, // status per DB-Default DRAFT
+      editedByAdmin: false,
     },
     include: { user: { select: { id: true, name: true, email: true } } },
   });
