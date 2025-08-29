@@ -10,9 +10,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Nur Secrets, KEIN NODE_ENV hier
     env:
-      NODE_ENV: production
-      DATABASE_URL: ${{ secrets.DATABASE_URL }} # Neon URL hier als Secret hinterlegt
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     steps:
       - uses: actions/checkout@v3
@@ -22,13 +22,22 @@ jobs:
         with:
           node-version: 20
 
+      # Debug: zeigen, dass die Dateien da sind
+      - name: Show workspace
+        run: |
+          pwd
+          ls -la
+          ls -la prisma || true
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate Prisma Client (Postgres schema)
+      # Prisma Client (Postgres-Schema)
+      - name: Generate Prisma Client
         run: npx prisma generate --schema prisma/schema.postgres.prisma
 
-      - name: Run Prisma Migrations (safe, no data loss)
+      # Migrationen einspielen (nur vorhandene; ohne Datenverlust)
+      - name: Run Prisma Migrations
         run: npx prisma migrate deploy --schema prisma/schema.postgres.prisma
 
       - name: Lint
