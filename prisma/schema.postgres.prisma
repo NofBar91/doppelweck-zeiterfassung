@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // <- kommt aus .env.production oder GitHub Secret
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  email     String
+  role      Role
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  email               String               @unique
+  passwordHash        String
+  name                String
+  role                Role                 @default(EMPLOYEE)
+  timeEntries         TimeEntry[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  passwordResetTokens PasswordResetToken[]
+}
+
+enum TimeEntryStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+model TimeEntry {
+  id            String          @id @default(cuid())
+  user          User            @relation(fields: [userId], references: [id])
+  userId        String
+  workDate      DateTime
+  startUtc      DateTime
+  endUtc        DateTime
+  durationMin   Int
+  location      String?
+  note          String?
+  editedByAdmin Boolean         @default(false)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  status        TimeEntryStatus @default(DRAFT)
+  lockedAt      DateTime?
+
+  @@index([userId, workDate])
+  @@index([workDate])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String
+  targetId  String
+  action    String
+  diff      Json
+  createdAt DateTime @default(now())
+}
