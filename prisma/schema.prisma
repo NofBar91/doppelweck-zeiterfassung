@@ -5,12 +5,12 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "postgresql"
+  provider = "prisma-client-js" // ← immer so!
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql" // ← Neon = Postgres
+  url      = env("DATABASE_URL") // ← GitHub Secret / .env(.production)
 }
 
 enum Role {
