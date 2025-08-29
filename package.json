@@ -2,38 +2,32 @@
   "name": "zeiterfassung",
   "version": "0.1.0",
   "private": true,
-"scripts": {
-  "dev": "npm run prisma:gen:dev && next dev --turbopack",
-
-  "build": "next build --turbopack",
-  "start": "next start",
-  "lint": "eslint",
-  "test": "vitest",
-  "e2e": "playwright test",
-
-  
-  "prisma:gen:dev": "prisma generate --schema prisma/schema.sqlite.prisma",
-  "prisma:push:dev": "prisma db push --schema prisma/schema.sqlite.prisma",
-  "prisma:studio:dev": "prisma studio --schema prisma/schema.sqlite.prisma",
-  "db:reset": "rimraf ./prisma/dev.db && npm run prisma:push:dev && tsx prisma/seed/seed.ts",
-
-
-  "prisma:gen:pg": "prisma generate --schema prisma/schema.postgres.prisma",
-  "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
-
-  "db:seed": "tsx prisma/seed/seed.ts",
-
-  "test:unit": "vitest"
-}
-,
+  "scripts": {
+    "dev": "npm run prisma:gen:dev && next dev --turbopack",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest",
+    "e2e": "playwright test",
+    "prisma:gen:dev": "prisma generate --schema prisma/schema.sqlite.prisma",
+    "prisma:push:dev": "prisma db push --schema prisma/schema.sqlite.prisma",
+    "prisma:studio:dev": "prisma studio --schema prisma/schema.sqlite.prisma",
+    "db:reset": "rimraf ./prisma/dev.db && npm run prisma:push:dev && tsx prisma/seed/seed.ts",
+    "prisma:gen:pg": "prisma generate --schema prisma/schema.postgres.prisma",
+    "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
+    "db:seed": "tsx prisma/seed/seed.ts",
+    "test:unit": "vitest"
+  },
   "dependencies": {
+    "@prisma/client": "6.14.0",
     "bcryptjs": "^3.0.2",
     "next": "15.5.0",
     "next-auth": "^4.24.11",
+    "nodemailer": "^6.10.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "^4.0.17",
-    "@prisma/client": "6.14.0"
+    "resend": "^6.0.1",
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
