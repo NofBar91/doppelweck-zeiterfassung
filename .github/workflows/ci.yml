@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      NODE_ENV: production
+      DATABASE_URL: ${{ secrets.DATABASE_URL }} # Neon URL hier als Secret hinterlegt
+
     steps:
       - uses: actions/checkout@v3
 
@@ -21,13 +25,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Prisma Client generieren
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      - name: Generate Prisma Client (Postgres schema)
+        run: npx prisma generate --schema prisma/schema.postgres.prisma
 
-      # Migrationen auf DB anwenden (Neon / PostgreSQL)
-      - name: Run Prisma Migrations
-        run: npx prisma migrate deploy
+      - name: Run Prisma Migrations (safe, no data loss)
+        run: npx prisma migrate deploy --schema prisma/schema.postgres.prisma
 
       - name: Lint
         run: npm run lint

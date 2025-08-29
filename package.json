@@ -2,19 +2,30 @@
   "name": "zeiterfassung",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
-    "start": "next start",
-    "lint": "eslint",
-    "test": "vitest",
-    "e2e": "playwright test",
-    "db:push": "prisma db push",
-    "db:seed": "tsx prisma/seed/seed.ts",
-    "db:reset": "rimraf ./prisma/dev.db && prisma db push && tsx prisma/seed/seed.ts",
-    "test:unit": "vitest"
+"scripts": {
+  "dev": "npm run prisma:gen:dev && next dev --turbopack",
 
-  },
+  "build": "next build --turbopack",
+  "start": "next start",
+  "lint": "eslint",
+  "test": "vitest",
+  "e2e": "playwright test",
+
+  
+  "prisma:gen:dev": "prisma generate --schema prisma/schema.sqlite.prisma",
+  "prisma:push:dev": "prisma db push --schema prisma/schema.sqlite.prisma",
+  "prisma:studio:dev": "prisma studio --schema prisma/schema.sqlite.prisma",
+  "db:reset": "rimraf ./prisma/dev.db && npm run prisma:push:dev && tsx prisma/seed/seed.ts",
+
+
+  "prisma:gen:pg": "prisma generate --schema prisma/schema.postgres.prisma",
+  "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
+
+  "db:seed": "tsx prisma/seed/seed.ts",
+
+  "test:unit": "vitest"
+}
+,
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "next": "15.5.0",
