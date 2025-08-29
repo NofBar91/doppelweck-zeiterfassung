@@ -5,7 +5,7 @@ import { isAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@prisma/client";
 
-// Lokaler Union-Typ + Type Guard statt import { Role } from "@prisma/client"
+// string-basierte Rollen + Guard
 type RoleLiteral = "ADMIN" | "EMPLOYEE";
 const ROLES = ["ADMIN", "EMPLOYEE"] as const;
 function isRole(x: unknown): x is RoleLiteral {
@@ -15,7 +15,7 @@ function isRole(x: unknown): x is RoleLiteral {
 // PATCH /api/admin/users/[id]
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ id: string }> } // Next 15.5: params als Promise
+  context: { params: Promise<{ id: string }> } // Next 15.5: params ist ein Promise
 ) {
   const { id } = await context.params;
 
@@ -24,14 +24,17 @@ export async function PATCH(
 
   const body = (await req.json().catch(() => null)) as Partial<{ name: string; role: unknown }>;
 
-  const data: Prisma.UserUpdateInput = {};
+  // Prisma-versionssicher: benutze das 'data'-Typsubset
+  const data: Prisma.UserUpdateArgs["data"] = {};
 
   if (typeof body?.name === "string") {
-    data.name = body.name;
+    // Name ist immer ein string – passt zu allen Versionen
+    data.name = body.name as NonNullable<typeof data.name>;
   }
+
   if (isRole(body?.role)) {
-    // Prisma erwartet hier den Enum-Typ; wir casten typsicher ohne 'any'
-    data.role = body.role as unknown as Prisma.UserUpdateInput["role"];
+    // Enum-Set über FieldUpdateOperationsInput – versionsrobust, kein $Enums nötig
+    data.role = { set: body.role as never } as NonNullable<typeof data.role>;
   }
 
   const user = await prisma.user.update({ where: { id }, data });
