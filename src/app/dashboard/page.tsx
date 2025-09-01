@@ -27,10 +27,10 @@ export default async function DashboardPage() {
         <div className="space-x-3">
           {isAdmin && (
             <>
-              <Link href="/admin/entries" className="underline">
-                Zur Admin-Ansicht
+              <Link href="/admin/entries" className="rounded-2xl px-3 py-2 border">
+                Zeit-Einträge
               </Link>
-              <Link href="/admin/users" className="underline">
+              <Link href="/admin/users" className="rounded-2xl px-3 py-2 border">
                 Mitarbeiter
               </Link>
             </>
