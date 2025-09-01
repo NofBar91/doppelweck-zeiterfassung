@@ -1,56 +1,69 @@
+// FILE: src/app/api/admin/users/[id]/route.ts
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import { Role } from "@prisma/client";
 
-// string-basierte Rollen + Guard
-type RoleLiteral = "ADMIN" | "EMPLOYEE";
-const ROLES = ["ADMIN", "EMPLOYEE"] as const;
-function isRole(x: unknown): x is RoleLiteral {
-  return typeof x === "string" && (ROLES as readonly string[]).includes(x);
-}
-
-// PATCH /api/admin/users/[id]
-export async function PATCH(
-  req: NextRequest,
-  context: { params: Promise<{ id: string }> } // Next 15.5: params ist ein Promise
-) {
-  const { id } = await context.params;
-
-  const session = await getServerSession(authOptions);
-  if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
-
-  const body = (await req.json().catch(() => null)) as Partial<{ name: string; role: unknown }>;
-
-  // Prisma-versionssicher: benutze das 'data'-Typsubset
-  const data: Prisma.UserUpdateArgs["data"] = {};
-
-  if (typeof body?.name === "string") {
-    // Name ist immer ein string – passt zu allen Versionen
-    data.name = body.name as NonNullable<typeof data.name>;
-  }
-
-  if (isRole(body?.role)) {
-    // Enum-Set über FieldUpdateOperationsInput – versionsrobust, kein $Enums nötig
-    data.role = { set: body.role as never } as NonNullable<typeof data.role>;
-  }
-
-  const user = await prisma.user.update({ where: { id }, data });
-  return Response.json(user);
+// Type Guard für Prisma-Fehler (ohne any)
+function isPrismaError(e: unknown, code: string): e is { code: string; message: string } {
+  return typeof e === "object" && e !== null && "code" in e && (e as { code?: unknown }).code === code;
 }
 
 // DELETE /api/admin/users/[id]
 export async function DELETE(
   _req: NextRequest,
-  context: { params: Promise<{ id: string }> }
+  ctx: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await context.params;
-
   const session = await getServerSession(authOptions);
   if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
 
-  await prisma.user.delete({ where: { id } });
-  return new Response(null, { status: 204 });
+  const { id } = await ctx.params;
+
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) return new Response("Not found", { status: 404 });
+
+  try {
+    await prisma.user.delete({ where: { id } });
+    return new Response(null, { status: 204 });
+  } catch (e: unknown) {
+    // FK verletzt (z. B. vorhandene TimeEntries) -> P2003
+    if (isPrismaError(e, "P2003")) {
+      return new Response(
+        "Nutzer kann nicht gelöscht werden, weil noch Zeit-Einträge existieren.",
+        { status: 409 }
+      );
+    }
+    console.error(e);
+    return new Response("Delete failed", { status: 500 });
+  }
+}
+
+// PUT /api/admin/users/[id]  (Name/Rolle ändern)
+export async function PUT(
+  req: NextRequest,
+  ctx: { params: Promise<{ id: string }> }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
+
+  const { id } = await ctx.params;
+
+  const body = (await req.json().catch(() => null)) as { name?: unknown; role?: unknown } | null;
+  if (!body) return new Response("Invalid payload", { status: 400 });
+
+  const data: { name?: string; role?: Role } = {};
+  if (typeof body.name === "string") data.name = body.name;
+  if (body.role === "ADMIN" || body.role === "EMPLOYEE") data.role = body.role as Role;
+
+  if (Object.keys(data).length === 0) return new Response("Nothing to update", { status: 400 });
+
+  const updated = await prisma.user.update({
+    where: { id },
+    data,
+    select: { id: true, name: true, email: true, role: true, createdAt: true },
+  });
+
+  return Response.json(updated);
 }
