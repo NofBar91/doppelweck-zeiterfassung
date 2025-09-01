@@ -16,7 +16,8 @@
     "prisma:gen:pg": "prisma generate --schema prisma/schema.postgres.prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
     "db:seed": "tsx prisma/seed/seed.ts",
-    "test:unit": "vitest"
+    "test:unit": "vitest",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "6.14.0",
