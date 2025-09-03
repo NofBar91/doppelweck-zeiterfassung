@@ -16,6 +16,7 @@
     "db:reset": "rimraf ./prisma/dev.db && npm run prisma:push:dev && tsx prisma/seed/seed.ts",
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
     "db:seed": "tsx prisma/seed/seed.ts",
+    "db:push": "prisma db push",
     "test:unit": "vitest",
     "postinstall": "node scripts/prisma-generate.mjs"
   },
