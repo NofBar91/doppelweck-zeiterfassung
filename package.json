@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest",
     "e2e": "playwright test",
-    "prisma:gen:dev": "node -e \"process.env.PRISMA_SCHEMA_PATH='prisma/schema.prisma';require('./scripts/prisma-generate.mjs')\"",
+    "prisma:gen:dev": "node -e \"process.env.PRISMA_SCHEMA_PATH='prisma/schema.sqlite.sprisma';require('./scripts/prisma-generate.mjs')\"",
     "prisma:gen:pg": "node -e \"process.env.PRISMA_SCHEMA_PATH='prisma/schema.postgres.prisma';require('./scripts/prisma-generate.mjs')\"",
     "prisma:push:dev": "prisma db push --schema prisma/schema.sqlite.prisma",
     "prisma:studio:dev": "prisma studio --schema prisma/schema.sqlite.prisma",
