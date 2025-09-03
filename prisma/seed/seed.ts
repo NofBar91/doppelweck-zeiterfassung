@@ -1,56 +1,29 @@
-// prisma/seed/seed.ts
-import { prisma } from '../../src/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const prisma = new PrismaClient();
 
 async function main() {
-  const passwordAdmin = await bcrypt.hash('Admin!234', 10);
-  const passwordEmp   = await bcrypt.hash('Mitarb!234', 10);
+  const email = "admin@develop.com";
+  const password = "Admin!234";
+  const passwordHash = await bcrypt.hash(password, 10);
 
-  const admin = await prisma.user.upsert({
-    where: { email: 'chef@example.com' },
-    update: {},
-    create: {
-      email: 'chef@example.com',
-      name: 'Chef',
-      role: 'ADMIN',
-      passwordHash: passwordAdmin,
-    },
-  });
+  const existing = await prisma.user.findUnique({ where: { email } });
+  if (existing) {
+    console.log("Admin existiert bereits:", existing.email);
+    return;
+  }
 
-  const emp = await prisma.user.upsert({
-    where: { email: 'max@example.com' },
-    update: {},
-    create: {
-      email: 'max@example.com',
-      name: 'Max Mustermann',
-      role: 'EMPLOYEE',
-      passwordHash: passwordEmp,
-    },
-  });
-
-  // Beispiel-Eintrag
-  const start = new Date(Date.UTC(2025, 0, 15, 8, 0, 0)); // 15.01.2025 08:00 UTC
-  const end   = new Date(Date.UTC(2025, 0, 15, 16, 30, 0));
-  const durationMin = Math.round((+end - +start) / 60000);
-
-  await prisma.timeEntry.create({
+  await prisma.user.create({
     data: {
-      userId: emp.id,
-      workDate: new Date(Date.UTC(2025, 0, 15)),
-      startUtc: start,
-      endUtc: end,
-      durationMin,
-      location: 'Büro Berlin',
-      note: 'Onboarding & Setup',
+      email,
+      name: "Chef",
+      role: "ADMIN",
+      passwordHash,
     },
   });
 
-  console.log('Seed fertig:', { admin: admin.email, emp: emp.email });
+  console.log("Admin angelegt:", email);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-}).finally(async () => {
-  await prisma.$disconnect();
-});
+main().finally(() => prisma.$disconnect());
