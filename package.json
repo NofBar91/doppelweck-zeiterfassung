@@ -9,15 +9,15 @@
     "lint": "eslint",
     "test": "vitest",
     "e2e": "playwright test",
-    "prisma:gen:dev": "prisma generate --schema prisma/schema.sqlite.prisma",
+    "prisma:gen:dev": "node -e \"process.env.PRISMA_SCHEMA_PATH='prisma/schema.prisma';require('./scripts/prisma-generate.mjs')\"",
+    "prisma:gen:pg": "node -e \"process.env.PRISMA_SCHEMA_PATH='prisma/schema.postgres.prisma';require('./scripts/prisma-generate.mjs')\"",
     "prisma:push:dev": "prisma db push --schema prisma/schema.sqlite.prisma",
     "prisma:studio:dev": "prisma studio --schema prisma/schema.sqlite.prisma",
     "db:reset": "rimraf ./prisma/dev.db && npm run prisma:push:dev && tsx prisma/seed/seed.ts",
-    "prisma:gen:pg": "prisma generate --schema prisma/schema.postgres.prisma",
     "prisma:migrate:deploy": "prisma migrate deploy --schema prisma/schema.postgres.prisma",
     "db:seed": "tsx prisma/seed/seed.ts",
     "test:unit": "vitest",
-    "postinstall": "prisma generate"
+    "postinstall": "node scripts/prisma-generate.mjs"
   },
   "dependencies": {
     "@prisma/client": "6.14.0",
