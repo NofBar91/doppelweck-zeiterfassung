@@ -42,7 +42,24 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   session: { strategy: "jwt" },
+  
   callbacks: {
+      async redirect({ url, baseUrl }) {
+    try {
+      // 1) Relative Pfade immer ans gleiche Origin hängen:
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+
+      // 2) Gleiche Origin? Erlauben
+      const u = new URL(url);
+      const base = new URL(baseUrl);
+      if (u.origin === base.origin) return url;
+
+      // 3) Alles andere blocken → sichere Default-Zielseite
+      return `${baseUrl}/dashboard`;
+    } catch {
+      return baseUrl;
+    }
+  },
     async jwt({ token, user }): Promise<JWT> {
       if (user) {
         const r = (user as unknown as Partial<UserWithRole>).role;
