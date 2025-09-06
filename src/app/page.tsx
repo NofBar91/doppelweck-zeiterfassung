@@ -1,7 +1,7 @@
 // src/app/page.tsx
 import Link from "next/link";
 import Image from "next/image";
-import LogoPng from "@/public/icons/dkw-logo.png";
+
 
 export const metadata = {
   title: "DKW Sicherheits-Service • Zeiterfassung",
@@ -23,7 +23,7 @@ export default function Home() {
             {/* Logo + Claim */}
             <div className="flex flex-col items-center md:items-start">
               <div className="mb-6">
-               <Image src={LogoPng} alt="DKW Sicherheits-Service Logo" priority className="h-auto w-40 md:w-56" />
+               <img src="/icons/icon-192.png" width="220" height="220" alt="DKW Sicherheits-Service Logo" />
               </div>
 
               <h1 className="text-center md:text-left text-3xl md:text-4xl font-extrabold tracking-tight">
