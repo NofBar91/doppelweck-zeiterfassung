@@ -22,14 +22,7 @@ export default function Home() {
             {/* Logo + Claim */}
             <div className="flex flex-col items-center md:items-start">
               <div className="mb-6">
-                <Image
-                  src="/icons/icon-192.png"
-                  alt="DKW Sicherheits-Service Logo"
-                  width={220}
-                  height={220}
-                  priority
-                  className="h-auto w-40 md:w-56"
-                />
+               <img src="/icons/icon-192.png" width="220" height="220" alt="DKW Sicherheits-Service Logo" />
               </div>
 
               <h1 className="text-center md:text-left text-3xl md:text-4xl font-extrabold tracking-tight">
@@ -65,7 +58,7 @@ export default function Home() {
 
             {/* Mini-Fakten */}
             <div className="mt-2 grid h-fit gap-3 text-sm text-zinc-300">
-              <Feature line1="Schnell erfassen" line2="Start/Stop oder Zeiten" />
+              <Feature line1="Schnell erfassen" line2="Zeiterfassung per Knopfdruck" />
               <Feature line1="Prüfen & freigeben" line2="für Vorgesetzte" />
               <Feature line1="Export" line2="CSV für Lohn & Controlling" />
               <Feature line1="Rollen & Rechte" line2="Admin / Mitarbeiter" />
