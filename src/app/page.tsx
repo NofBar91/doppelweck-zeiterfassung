@@ -27,7 +27,7 @@ export default function Home() {
               </div>
 
               <h1 className="text-center md:text-left text-3xl md:text-4xl font-extrabold tracking-tight">
-                DKW&nbsp;Sicherheits-Service
+                Doppelweck&nbsp;Lieferdienst
               </h1>
               <p className="mt-3 text-center md:text-left text-zinc-300 max-w-prose">
                 Die unternehmensweite Zeiterfassung – schnell, sicher und
