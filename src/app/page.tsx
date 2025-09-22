@@ -4,9 +4,9 @@ import Image from "next/image";
 
 
 export const metadata = {
-  title: "DKW Sicherheits-Service • Zeiterfassung",
+  title: "Doppelweck • Zeiterfassung",
   description:
-    "Sichere, schnelle und einfache Zeiterfassung für den DKW Sicherheits-Service.",
+    "Sichere, schnelle und einfache Zeiterfassung für den Doppelweck-Lieferdienst.",
 };
 
 export default function Home() {
@@ -69,7 +69,7 @@ export default function Home() {
 
         {/* Footer */}
         <p className="mt-6 text-center text-xs text-zinc-500">
-          © {new Date().getFullYear()} DKW Sicherheits-Service – Zeiterfassung
+          © {new Date().getFullYear()} Doppelweck – Zeiterfassung
         </p>
       </div>
     </main>
