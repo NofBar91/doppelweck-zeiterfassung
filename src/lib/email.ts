@@ -6,6 +6,10 @@ const provider = process.env.EMAIL_PROVIDER;
 const from = process.env.EMAIL_FROM || "Zeiterfassung <noreply@example.com>";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
+console.log("EMAIL_PROVIDER:", process.env.EMAIL_PROVIDER);
+console.log("EMAIL_FROM:", process.env.EMAIL_FROM);
+
+
 function inviteHtml(link: string) {
   return `
     <div style="font-family:system-ui,Segoe UI,Roboto,Arial">
