@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/authz";
-import { CreateUserSchema } from "@/lib/validators/users";
+import { CreateUserDirectSchema } from "@/lib/validators/users";
 import bcrypt from "bcryptjs";
 
 export async function GET() {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   if (!isAdmin(session)) return new Response("Forbidden", { status: 403 });
 
   const json = await req.json().catch(() => null);
-  const parsed = CreateUserSchema.safeParse(json);
+  const parsed = CreateUserDirectSchema.safeParse(json);
   if (!parsed.success) {
     return new Response("Invalid payload", { status: 400 });
   }

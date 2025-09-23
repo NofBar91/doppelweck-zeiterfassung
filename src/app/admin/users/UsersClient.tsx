@@ -108,30 +108,60 @@ export default function UsersClient() {
     if (busyInvite) return;
     setBusyInvite(true);
     setInviteLink(null);
+
     try {
       const res = await fetch("/api/admin/invites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: inviteEmail, role: inviteRole }),
       });
-      if (!res.ok) throw new Error(await res.text());
-      const inv: Invite = await res.json();
-      const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
-      const link = `${base}/invite/${inv.token}`;
-      setInviteLink(link);
+
+      if (!res.ok) {
+        let msg = await res.text();
+        try {
+          const json = JSON.parse(msg);
+          if (json?.error) {
+            msg = json.error;
+            if (json.details) {
+              const issues = Object.entries(json.details.fieldErrors ?? {})
+                .map(([k, v]) => `${k}: ${(v as string[]).join(", ")}`)
+                .join(" | ");
+              if (issues) msg += `\n${issues}`;
+            }
+          }
+        } catch {
+          /* plain text lassen */
+        }
+        alert(msg || "Einladung fehlgeschlagen");
+        return;
+      }
+
+      // ✅ robust für beide Response-Formen: { invite } oder direkt Invite-Objekt
+      const json = await res.json();
+      const token: string | undefined = json?.invite?.token ?? json?.token;
+      if (token) {
+        const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin;
+        const link = `${base}/invite/${token}`;
+        setInviteLink(link);
+      }
+
       setInviteEmail("");
       setInviteRole("EMPLOYEE");
       await load();
-    } catch (e: unknown) {
-      alert(errMsg(e) || "Einladung fehlgeschlagen");
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Einladung fehlgeschlagen");
     } finally {
       setBusyInvite(false);
     }
   }
 
+
   async function revokeInvite(id: string) {
     if (!confirm("Einladung widerrufen?")) return;
-    const res = await fetch(`/api/admin/invites?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    // NEU: RESTful Pfad-Endpoint
+    const res = await fetch(`/api/admin/invites/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
     if (!res.ok) {
       alert(await res.text());
       return;
@@ -148,7 +178,7 @@ export default function UsersClient() {
 
   // ===== Nutzer-Operationen =====
   async function updateRole(id: string, role: Role) {
-    const res = await fetch(`/api/admin/users?id=${encodeURIComponent(id)}`, {
+    const res = await fetch(`/api/admin/users/${encodeURIComponent(id)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role }),
@@ -162,7 +192,10 @@ export default function UsersClient() {
 
   async function deleteUser(id: string) {
     if (!confirm("Nutzer wirklich löschen? Alle zugehörigen Zeiten bleiben bestehen.")) return;
-    const res = await fetch(`/api/admin/users?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    // NEU: RESTful Pfad-Endpoint
+    const res = await fetch(`/api/admin/users/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
     if (!res.ok) {
       alert(await res.text());
       return;
@@ -171,7 +204,6 @@ export default function UsersClient() {
   }
 
   async function sendReset(email: string) {
-    // Immer 200, um Enumeration zu verhindern – UI zeigt nur Info
     await fetch("/api/auth/request-reset", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -202,59 +234,27 @@ export default function UsersClient() {
         <h2 className="font-semibold">Mitarbeiter direkt anlegen</h2>
         <form onSubmit={createDirect} className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-name">
-              Name
-            </label>
-            <input
-              id="direct-name"
-              className="w-full border rounded px-3 py-2"
-              value={directName}
-              onChange={(e) => setDirectName(e.target.value)}
-              placeholder="Max Mustermann"
-            />
+            <label className="block text-sm mb-1" htmlFor="direct-name">Name</label>
+            <input id="direct-name" className="w-full border rounded px-3 py-2"
+              value={directName} onChange={(e) => setDirectName(e.target.value)} placeholder="Max Mustermann" />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-email">
-              E-Mail
-            </label>
-            <input
-              id="direct-email"
-              className="w-full border rounded px-3 py-2"
-              type="email"
-              value={directEmail}
-              onChange={(e) => setDirectEmail(e.target.value)}
-              required
-              placeholder="max@firma.de"
-            />
+            <label className="block text-sm mb-1" htmlFor="direct-email">E-Mail</label>
+            <input id="direct-email" className="w-full border rounded px-3 py-2" type="email"
+              value={directEmail} onChange={(e) => setDirectEmail(e.target.value)} required placeholder="max@firma.de" />
           </div>
           <div>
-            <label className="block text-sm mb-1" htmlFor="direct-role">
-              Rolle
-            </label>
-            <select
-              id="direct-role"
-              className="w-full border rounded px-3 py-2"
-              value={directRole}
-              onChange={(e) => setDirectRole(e.target.value as Role)}
-            >
+            <label className="block text-sm mb-1" htmlFor="direct-role">Rolle</label>
+            <select id="direct-role" className="w-full border rounded px-3 py-2"
+              value={directRole} onChange={(e) => setDirectRole(e.target.value as Role)}>
               <option value="EMPLOYEE">EMPLOYEE</option>
               <option value="ADMIN">ADMIN</option>
             </select>
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-password">
-              Passwort (min. 8 Zeichen)
-            </label>
-            <input
-              id="direct-password"
-              className="w-full border rounded px-3 py-2"
-              type="password"
-              value={directPassword}
-              onChange={(e) => setDirectPassword(e.target.value)}
-              minLength={8}
-              required
-              placeholder="Sicheres Passwort"
-            />
+            <label className="block text-sm mb-1" htmlFor="direct-password">Passwort (min. 8 Zeichen)</label>
+            <input id="direct-password" className="w-full border rounded px-3 py-2" type="password"
+              value={directPassword} onChange={(e) => setDirectPassword(e.target.value)} minLength={8} required placeholder="Sicheres Passwort" />
           </div>
           <div className="md:col-span-3 flex items-end">
             <button disabled={busyCreate} className="rounded-2xl px-4 py-2 border shadow">
@@ -273,29 +273,14 @@ export default function UsersClient() {
         <h2 className="font-semibold">Nutzer einladen</h2>
         <form onSubmit={createInvite} className="flex flex-col md:flex-row gap-2 md:items-end">
           <div className="flex-1">
-            <label className="block text-sm mb-1" htmlFor="invite-email">
-              E-Mail
-            </label>
-            <input
-              id="invite-email"
-              className="w-full border rounded px-3 py-2"
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              required
-              placeholder="max@firma.de"
-            />
+            <label className="block text-sm mb-1" htmlFor="invite-email">E-Mail</label>
+            <input id="invite-email" className="w-full border rounded px-3 py-2" type="email"
+              value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required placeholder="max@firma.de" />
           </div>
           <div>
-            <label className="block text-sm mb-1" htmlFor="invite-role">
-              Rolle
-            </label>
-            <select
-              id="invite-role"
-              className="border rounded px-3 py-2"
-              value={inviteRole}
-              onChange={(e) => setInviteRole(e.target.value as Role)}
-            >
+            <label className="block text-sm mb-1" htmlFor="invite-role">Rolle</label>
+            <select id="invite-role" className="border rounded px-3 py-2"
+              value={inviteRole} onChange={(e) => setInviteRole(e.target.value as Role)}>
               <option value="EMPLOYEE">EMPLOYEE</option>
               <option value="ADMIN">ADMIN</option>
             </select>
@@ -310,12 +295,8 @@ export default function UsersClient() {
         {inviteLink && (
           <p className="text-sm">
             Einladungslink:&nbsp;
-            <a className="underline" href={inviteLink}>
-              {inviteLink}
-            </a>{" "}
-            <button className="underline" onClick={() => copyToClipboard(inviteLink)}>
-              Kopieren
-            </button>
+            <a className="underline" href={inviteLink}>{inviteLink}</a>{" "}
+            <button className="underline" onClick={() => copyToClipboard(inviteLink)}>Kopieren</button>
           </p>
         )}
       </section>
@@ -339,7 +320,7 @@ export default function UsersClient() {
               </thead>
               <tbody>
                 {invites.map((inv) => {
-                  const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
+                  const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin;
                   const link = `${base}/invite/${inv.token}`;
                   return (
                     <tr key={inv.id} className="border-b">
@@ -348,10 +329,11 @@ export default function UsersClient() {
                       <td className="py-2 pr-4">{new Date(inv.createdAt).toLocaleString()}</td>
                       <td className="py-2 pr-4">{new Date(inv.expiresAt).toLocaleString()}</td>
                       <td className="py-2 pr-4 space-x-2">
-                        <button className="underline" onClick={() => copyToClipboard(link)}>
+                        <button type="button" className="underline" onClick={() => copyToClipboard(link)}>
                           Link kopieren
                         </button>
-                        <button className="underline text-red-600" onClick={() => revokeInvite(inv.id)}>
+
+                        <button type="button" className="underline text-red-600" onClick={() => revokeInvite(inv.id)}>
                           Widerrufen
                         </button>
                       </td>
@@ -396,10 +378,11 @@ export default function UsersClient() {
                       </select>
                     </td>
                     <td className="py-2 pr-4 space-x-2">
-                      <button className="underline" onClick={() => sendReset(u.email)}>
+                      <button type="button" className="underline" onClick={() => sendReset(u.email)}>
                         Passwort-Reset senden
                       </button>
-                      <button className="underline text-red-600" onClick={() => deleteUser(u.id)}>
+
+                      <button type="button" className="underline text-red-600" onClick={() => deleteUser(u.id)}>
                         Löschen
                       </button>
                     </td>

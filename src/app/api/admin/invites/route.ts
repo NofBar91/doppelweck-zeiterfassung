@@ -1,56 +1,91 @@
+// src/app/api/admin/invites/route.ts
 import { NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { isAdmin } from "@/lib/authz";
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
-import bcrypt from "bcryptjs";
+import { InviteCreateSchema } from "@/lib/validators/users";
+import crypto from "crypto";
+import { sendEmail } from "@/lib/email";
 
-const CreateUserSchema = z.object({
-  name: z.string().min(1).optional(),
-  email: z.string().email(),
-  password: z.string().min(8),         // Passwort direkt setzen
-  role: z.enum(["ADMIN", "EMPLOYEE"]).default("EMPLOYEE"),
-});
-
-// GET /api/admin/invites
+/**
+ * GET /api/admin/invites
+ * Liste offener Einladungen (nur Admin)
+ */
 export async function GET() {
   const session = await getServerSession(authOptions);
-  if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
+  if (!session || !isAdmin(session)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   const invites = await prisma.inviteToken.findMany({
     orderBy: { createdAt: "desc" },
+    // select: { id: true, email: true, role: true, token: true, createdAt: true, expiresAt: true, usedAt: true },
   });
 
   return Response.json(invites);
 }
 
+/**
+ * POST /api/admin/invites
+ * Neue Einladung anlegen (nur Admin).
+ * Body: { email: string, role: "ADMIN" | "EMPLOYEE" }
+ */
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
+  if (!session || !isAdmin(session)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
-  const body = await req.json().catch(() => null);
-  const parsed = CreateUserSchema.safeParse(body);
-  if (!parsed.success) return new Response("Invalid payload", { status: 400 });
-  const { name, email, password, role } = parsed.data;
+  let body: unknown = null;
+  try {
+    body = await req.json();
+  } catch {
+    /* leer lassen – Schema liefert sauberen Fehler */
+  }
 
-  const exists = await prisma.user.findUnique({ where: { email } });
-  if (exists) return new Response("User exists", { status: 409 });
+  const parsed = InviteCreateSchema.safeParse(body);
+  if (!parsed.success) {
+    const details = parsed.error.flatten();
+    return Response.json({ error: "Invalid payload", details }, { status: 400 });
+  }
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const { email, role } = parsed.data;
 
-  const user = await prisma.user.create({
-    data: { name: name ?? "", email, passwordHash, role },
-    select: { id: true, name: true, email: true, role: true, createdAt: true },
+  // Nutzer existiert schon?
+  const existingUser = await prisma.user.findUnique({ where: { email } });
+  if (existingUser) return new Response("User exists", { status: 409 });
+
+  // Alte offene Einladungen zu dieser Mail aufräumen (optional)
+  await prisma.inviteToken.deleteMany({ where: { email } });
+
+  // Token erzeugen & speichern
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 Tage
+
+  const invite = await prisma.inviteToken.create({
+    data: { email, role, token, expiresAt },
   });
 
-  return Response.json(user, { status: 201 });
+  // E-Mail versenden (oder Konsole, wenn kein Provider konfiguriert)
+  try {
+    await sendEmail(email, token);
+  } catch (e) {
+    console.error("Invite e-mail sending failed:", e);
+  }
+
+  return Response.json({ ok: true, invite });
 }
 
-// DELETE /api/admin/invites?id=...
+/**
+ * DELETE /api/admin/invites?id=INVITE_ID
+ * Einladung widerrufen (nur Admin)
+ */
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session || !isAdmin(session)) return new Response("Unauthorized", { status: 401 });
+  if (!session || !isAdmin(session)) {
+    return new Response("Unauthorized", { status: 401 });
+  }
 
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");

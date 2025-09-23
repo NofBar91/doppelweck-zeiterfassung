@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   try {
     durationMin = calcDurationMin(start.toISOString(), end.toISOString());
     if (durationMin <= 0) return new Response("Ungültige Zeitspanne", { status: 400 });
-    if (durationMin > 16 * 60) return new Response("Dauer zu lang", { status: 400 });
+    if (durationMin > 24 * 60) return new Response("Dauer zu lang", { status: 400 });
   } catch {
     return new Response("Ungültige Zeitspanne", { status: 400 });
   }
