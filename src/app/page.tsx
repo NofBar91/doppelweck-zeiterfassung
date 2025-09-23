@@ -6,7 +6,7 @@ import Image from "next/image";
 export const metadata = {
   title: "Doppelweck • Zeiterfassung",
   description:
-    "Sichere, schnelle und einfache Zeiterfassung für den Doppelweck-Lieferdienst.",
+    "Sichere, schnelle und einfache Zeiterfassung für den Doppelweck-Lieferservice.",
 };
 
 export default function Home() {
@@ -27,7 +27,7 @@ export default function Home() {
               </div>
 
               <h1 className="text-center md:text-left text-3xl md:text-4xl font-extrabold tracking-tight">
-                Doppelweck&nbsp;Lieferdienst
+                Doppelweck&nbsp;Lieferservice
               </h1>
               <p className="mt-3 text-center md:text-left text-zinc-300 max-w-prose">
                 Die unternehmensweite Zeiterfassung – schnell, sicher und
