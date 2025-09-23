@@ -4,8 +4,8 @@ import nodemailer from "nodemailer";
 
 const provider = process.env.EMAIL_PROVIDER;
 
-const from = process.env.EMAIL_FROM || "Zeiterfassung <noreply@example.com>";
-const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+const from = process.env.EMAIL_FROM || "Thorsten Sehmer <thorstenstoffel@web.de>";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://doppelweck-zeiterfassung.vercel.app";
 
 function inviteHtml(link: string) {
   return `
