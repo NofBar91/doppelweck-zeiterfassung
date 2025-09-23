@@ -148,7 +148,7 @@ export default function AdminEntriesClient() {
       <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
         <div>
           <label htmlFor="filter-user" className="block text-sm mb-1">Mitarbeiter</label>
-          <select id="filter-user" className="w-full border rounded px-3 py-2" value={filters.userId || ""}
+          <select id="filter-user" className="w-full border rounded px-3 py-2 bg-black text-white" value={filters.userId || ""}
             onChange={(e)=> setFilters(f=>({...f, userId: e.target.value || undefined}))} disabled={loadingUsers}>
             <option value="">Alle</option>
             {users.map(u=> <option key={u.id} value={u.id}>{u.name ?? u.email}</option>)}
@@ -172,7 +172,7 @@ export default function AdminEntriesClient() {
         </div>
         <div>
           <label htmlFor="filter-status" className="block text-sm mb-1">Status</label>
-          <select id="filter-status" className="w-full border rounded px-3 py-2" value={filters.status || ""}
+          <select id="filter-status" className="w-full border rounded px-3 py-2 bg-black text-white" value={filters.status || ""}
             onChange={(e)=> setFilters(f=>({...f, status: e.target.value || undefined}))}>
             <option value="">Alle</option>
             <option value="DRAFT">DRAFT</option>
