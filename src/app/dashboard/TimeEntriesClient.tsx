@@ -269,7 +269,7 @@ export default function TimeEntriesClient() {
                 <th className="py-2 pr-4">Bis</th>
                 <th className="py-2 pr-4">Dauer</th>
                 <th className="py-2 pr-4">Ort</th>
-                <th className="py-2 pr-4">Notiz</th>
+                <th className="py-2 pr-4">Kilometer</th>
                 <th className="py-2 pr-4">Aktionen</th>
               </tr>
             </thead>
@@ -335,7 +335,7 @@ export default function TimeEntriesClient() {
               <input id="location" className="w-full border rounded px-3 py-2" value={form.location} onChange={(e)=>setForm({...form, location: e.target.value})} placeholder="z. B. Büro Berlin" />
             </div>
             <div>
-              <label htmlFor="note" className="block text-sm">Notiz</label>
+              <label htmlFor="note" className="block text-sm">Kilometer</label>
               <textarea id="note" className="w-full border rounded px-3 py-2" value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} rows={3} />
             </div>
             <div className="flex items-center justify-end gap-2">
