@@ -126,7 +126,7 @@ export default function AdminEntriesClient() {
   }
 
   function exportCsv() {
-    const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer","Ort","Notiz","Status","Admin*"];
+    const headers = ["Datum","Mitarbeiter","Von","Bis","Dauer","Ort","Kilometer","Status","Admin*"];
     const rows = entries.map(e => {
       const date = new Date(e.startUtc).toLocaleDateString();
       const start = new Date(e.startUtc).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -136,6 +136,27 @@ export default function AdminEntriesClient() {
       const status = (e as Partial<Entry>).status ?? "DRAFT";
       return [date, user, start, end, duration, e.location ?? "", e.note ?? "", status, e.editedByAdmin ? "*" : ""];
     });
+
+      // Gesamtstunden
+      const totalMin = sumMinutes(entries);
+      const totalStr = minutesToHHMM(totalMin);
+
+      // Summe aller Zahlen in der Notiz-Spalte
+      const noteSum = entries.reduce((sum, e) => {
+        const note = String(e.note ?? "").replace(",", "."); // Komma → Punkt
+        const match = note.match(/-?\d+(\.\d+)?/); // erste Zahl im Text finden
+        if (match) {
+          const val = parseFloat(match[0]);
+          if (!isNaN(val)) {
+            return sum + val;
+          }
+        }
+        return sum;
+      }, 0);
+
+      // Summenzeile anhängen
+      rows.push([]);
+      rows.push(["", "", "", "Gesamt:", totalStr, "", noteSum.toString() + " KM", "", ""]);
 
     const csv = toCSV(headers, rows);
     const stamp = new Date().toISOString().slice(0,10);
@@ -207,7 +228,7 @@ export default function AdminEntriesClient() {
                 <th className="py-2 pr-4">Bis</th>
                 <th className="py-2 pr-4">Dauer</th>
                 <th className="py-2 pr-4">Ort</th>
-                <th className="py-2 pr-4">Notiz</th>
+                <th className="py-2 pr-4">Kilometer</th>
                 <th className="py-2 pr-4">Status</th>
                 <th className="py-2 pr-4">Admin</th>
                 <th className="py-2 pr-4">Aktionen</th>
@@ -246,7 +267,7 @@ export default function AdminEntriesClient() {
                     </td>
                     <td className="py-2 pr-4 max-w-[16rem]">
                       {isEditing ? (
-                        <input aria-label="Notiz" className="border rounded px-2 py-1 w-full"
+                        <input aria-label="Kilometer" className="border rounded px-2 py-1 w-full"
                           value={edit?.note || ""} onChange={(ev)=> setEdit(s=> s ? ({...s, note: ev.target.value}) : s)} />
                       ) : <span title={e.note ?? ""} className="truncate inline-block max-w-[16rem]">{e.note}</span>}
                     </td>
