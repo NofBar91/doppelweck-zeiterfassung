@@ -65,8 +65,8 @@ function defaultForm(): FormState {
   return {
     mode: "create",
     date: `${yyyy}-${mm}-${dd}`,
-    start: "08:00",
-    end: "16:00",
+    start: "04:00",
+    end: "09:00",
     location: "",
     note: "",
   };
