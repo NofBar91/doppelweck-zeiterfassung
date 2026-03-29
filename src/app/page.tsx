@@ -10,7 +10,6 @@ export const metadata = {
 export default function Home() {
   return (
     <main className="relative flex min-h-[100svh] overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-950 via-zinc-950 to-black text-zinc-100">
-      
       {/* Hintergrund Glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-amber-400/10 blur-3xl animate-pulse" />
@@ -18,13 +17,13 @@ export default function Home() {
         <div className="absolute bottom-6 right-4 h-44 w-44 rounded-full bg-cyan-400/10 blur-3xl animate-pulse" />
       </div>
 
-      {/* 🥚 Eier (auch Mobile, aber subtil) */}
+      {/* Eier */}
       <FloatingEgg className="left-[6%] top-[12%] opacity-60 scale-75 md:scale-100" delay="0s" />
       <FloatingEgg className="right-[6%] top-[18%] opacity-60 scale-75 md:scale-100" delay="1.4s" />
       <FloatingEgg className="left-[10%] bottom-[10%] opacity-50 scale-75 md:scale-100" delay="2.2s" />
       <FloatingEgg className="right-[10%] bottom-[8%] opacity-50 scale-75 md:scale-100" delay="0.8s" />
 
-      {/* 🐰 Hase */}
+      {/* Hase */}
       <Bunny />
 
       <div
@@ -32,25 +31,19 @@ export default function Home() {
         style={{
           paddingTop: "max(1rem, env(safe-area-inset-top))",
           paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+          paddingLeft: "max(1rem, env(safe-area-inset-left))",
+          paddingRight: "max(1rem, env(safe-area-inset-right))",
         }}
       >
         <div className="w-full max-w-3xl">
-          
           <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
 
-            {/* Glow Card */}
-            <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl" />
-            <div className="absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
-
-            {/* Grid Pattern */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
 
             <div className="relative grid gap-6 p-5 sm:gap-8 sm:p-8 md:grid-cols-[1fr,auto] md:p-12">
-
-              {/* LEFT */}
               <div className="flex flex-col items-center text-center md:items-start md:text-left">
-                
-                {/* Logo */}
                 <div className="relative mb-4 animate-float">
                   <div className="absolute inset-0 rounded-full bg-amber-300/20 blur-2xl" />
                   <img
@@ -60,12 +53,11 @@ export default function Home() {
                   />
                 </div>
 
-                {/* Badge */}
                 <span className="mb-3 rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs text-amber-200">
                   🐣 Oster-Special
                 </span>
 
-                <h1 className="text-2xl font-extrabold sm:text-3xl md:text-5xl">
+                <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl md:text-5xl">
                   Doppelweck&nbsp;Lieferservice
                 </h1>
 
@@ -73,25 +65,22 @@ export default function Home() {
                   Die unternehmensweite Zeiterfassung – schnell, sicher und mobil.
                 </p>
 
-                {/* CTA */}
                 <div className="mt-6 w-full sm:w-auto">
                   <Link
                     href="/login"
-                    className="inline-flex w-full sm:w-auto items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-r from-amber-300/20 via-white/10 to-pink-300/20 px-5 py-3 font-medium transition hover:scale-[1.02]"
+                    className="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-r from-amber-300/20 via-white/10 to-pink-300/20 px-5 py-3 font-medium transition hover:scale-[1.02] sm:w-auto"
                   >
                     Zum Login →
                   </Link>
                 </div>
               </div>
 
-              {/* RIGHT */}
               <div className="grid gap-3 text-sm">
                 <Feature line1="Schnell erfassen" line2="per Knopfdruck" />
                 <Feature line1="Freigabe" line2="für Vorgesetzte" />
                 <Feature line1="Export" line2="CSV möglich" />
                 <Feature line1="Rollen" line2="Admin / Mitarbeiter" />
               </div>
-
             </div>
           </div>
 
@@ -100,43 +89,10 @@ export default function Home() {
           </p>
         </div>
       </div>
-
-      {/* ANIMATIONEN */}
-      <style jsx global>{`
-        @keyframes float {
-          0%,100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-
-        @keyframes floatSlow {
-          0%,100% { transform: translateY(0) rotate(0deg); }
-          50% { transform: translateY(-12px) rotate(3deg); }
-        }
-
-        @keyframes bunnyHop {
-          0%,100% { transform: translateX(0); }
-          25% { transform: translateX(6px) translateY(-4px); }
-          50% { transform: translateX(12px); }
-          75% { transform: translateX(18px) translateY(-3px); }
-        }
-
-        .animate-float {
-          animation: float 4s ease-in-out infinite;
-        }
-
-        .animate-float-slow {
-          animation: floatSlow 6s ease-in-out infinite;
-        }
-
-        .animate-bunny {
-          animation: bunnyHop 6s ease-in-out infinite;
-        }
-      `}</style>
     </main>
   );
 }
 
-/* Feature */
 function Feature({ line1, line2 }: { line1: string; line2: string }) {
   return (
     <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
@@ -146,19 +102,27 @@ function Feature({ line1, line2 }: { line1: string; line2: string }) {
   );
 }
 
-/* Eier */
-function FloatingEgg({ className = "", delay = "0s" }: any) {
+function FloatingEgg({
+  className = "",
+  delay = "0s",
+}: {
+  className?: string;
+  delay?: string;
+}) {
   return (
     <div
       className={`pointer-events-none absolute animate-float-slow ${className}`}
       style={{ animationDelay: delay }}
     >
-      <div className="h-14 w-10 rounded-[999px] bg-gradient-to-b from-pink-300/80 via-amber-200/70 to-cyan-300/70" />
+      <div className="relative h-14 w-10 rounded-[999px] bg-gradient-to-b from-pink-300/80 via-amber-200/70 to-cyan-300/70 shadow-[0_0_30px_rgba(255,255,255,0.08)]">
+        <div className="absolute left-2 right-2 top-3 h-1 rounded-full bg-white/40" />
+        <div className="absolute left-2.5 right-2.5 top-6 h-1 rounded-full bg-white/30" />
+        <div className="absolute left-2 right-2 top-9 h-1 rounded-full bg-white/40" />
+      </div>
     </div>
   );
 }
 
-/* Hase */
 function Bunny() {
   return (
     <div className="pointer-events-none absolute bottom-4 right-6 animate-bunny opacity-80">
