@@ -63,6 +63,8 @@ export default function Home() {
 
                 <p className="mt-3 text-sm text-zinc-300 sm:text-base md:text-lg">
                   Die unternehmensweite Zeiterfassung – schnell, sicher und mobil.
+                  Jetzt im neuen Osterlook
+                  Allen Mitarbeitern eine frohe Osterzeit ! 
                 </p>
 
                 <div className="mt-6 w-full sm:w-auto">
