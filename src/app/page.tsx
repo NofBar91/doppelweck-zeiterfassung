@@ -17,11 +17,41 @@ export default function Home() {
         <div className="absolute bottom-6 right-4 h-44 w-44 rounded-full bg-cyan-400/10 blur-3xl animate-pulse" />
       </div>
 
-      {/* Eier */}
-      <FloatingEgg className="left-[6%] top-[12%] opacity-60 scale-75 md:scale-100" delay="0s" />
-      <FloatingEgg className="right-[6%] top-[18%] opacity-60 scale-75 md:scale-100" delay="1.4s" />
-      <FloatingEgg className="left-[10%] bottom-[10%] opacity-50 scale-75 md:scale-100" delay="2.2s" />
-      <FloatingEgg className="right-[10%] bottom-[8%] opacity-50 scale-75 md:scale-100" delay="0.8s" />
+      {/* Eier – Mobile separat optimiert */}
+      <FloatingEgg
+        className="left-[4%] top-[9%] z-0 opacity-85 scale-90 md:hidden"
+        delay="0s"
+      />
+      <FloatingEgg
+        className="right-[5%] top-[13%] z-0 opacity-80 scale-[0.95] md:hidden"
+        delay="1.2s"
+      />
+      <FloatingEgg
+        className="left-[3%] bottom-[18%] z-0 opacity-75 scale-90 md:hidden"
+        delay="2s"
+      />
+      <FloatingEgg
+        className="right-[4%] bottom-[16%] z-0 opacity-75 scale-95 md:hidden"
+        delay="0.7s"
+      />
+
+      {/* Eier – Desktop wie bisher */}
+      <FloatingEgg
+        className="left-[6%] top-[12%] z-0 hidden opacity-60 scale-75 md:block md:scale-100"
+        delay="0s"
+      />
+      <FloatingEgg
+        className="right-[6%] top-[18%] z-0 hidden opacity-60 scale-75 md:block md:scale-100"
+        delay="1.4s"
+      />
+      <FloatingEgg
+        className="left-[10%] bottom-[10%] z-0 hidden opacity-50 scale-75 md:block md:scale-100"
+        delay="2.2s"
+      />
+      <FloatingEgg
+        className="right-[10%] bottom-[8%] z-0 hidden opacity-50 scale-75 md:block md:scale-100"
+        delay="0.8s"
+      />
 
       {/* Hase */}
       <Bunny />
@@ -61,10 +91,10 @@ export default function Home() {
                   Doppelweck&nbsp;Lieferservice
                 </h1>
 
-                <p className="mt-3 text-sm text-zinc-300 sm:text-base md:text-lg">
-                  Die unternehmensweite Zeiterfassung – schnell, sicher und mobil.
-                  Jetzt im neuen Osterlook
-                  Allen Mitarbeitern eine frohe Osterzeit ! 
+                <p className="mt-3 max-w-prose text-sm leading-6 text-zinc-300 sm:text-base md:text-lg">
+                  Die unternehmensweite Zeiterfassung – schnell, sicher und
+                  mobil. Jetzt im neuen Osterlook. Allen Mitarbeitern eine
+                  frohe Osterzeit!
                 </p>
 
                 <div className="mt-6 w-full sm:w-auto">
@@ -116,10 +146,10 @@ function FloatingEgg({
       className={`pointer-events-none absolute animate-float-slow ${className}`}
       style={{ animationDelay: delay }}
     >
-      <div className="relative h-14 w-10 rounded-[999px] bg-gradient-to-b from-pink-300/80 via-amber-200/70 to-cyan-300/70 shadow-[0_0_30px_rgba(255,255,255,0.08)]">
-        <div className="absolute left-2 right-2 top-3 h-1 rounded-full bg-white/40" />
+      <div className="relative h-16 w-11 rounded-[999px] bg-gradient-to-b from-pink-300 via-amber-200 to-cyan-300 shadow-[0_0_35px_rgba(255,255,255,0.14)] ring-1 ring-white/15">
+        <div className="absolute left-2 right-2 top-3 h-1 rounded-full bg-white/45" />
         <div className="absolute left-2.5 right-2.5 top-6 h-1 rounded-full bg-white/30" />
-        <div className="absolute left-2 right-2 top-9 h-1 rounded-full bg-white/40" />
+        <div className="absolute left-2 right-2 top-9 h-1 rounded-full bg-white/45" />
       </div>
     </div>
   );
@@ -127,13 +157,27 @@ function FloatingEgg({
 
 function Bunny() {
   return (
-    <div className="pointer-events-none absolute bottom-4 right-6 animate-bunny opacity-80">
-      <div className="relative">
-        <div className="h-6 w-10 rounded-full bg-white/80" />
-        <div className="absolute -top-3 left-5 h-5 w-5 rounded-full bg-white/90" />
-        <div className="absolute -top-6 left-6 h-5 w-1.5 rounded-full bg-white/80" />
-        <div className="absolute -top-6 left-8 h-5 w-1.5 rounded-full bg-white/80" />
+    <>
+      {/* Mobile */}
+      <div className="pointer-events-none absolute bottom-24 right-3 z-20 animate-bunny md:hidden">
+        <div className="relative scale-95">
+          <div className="absolute inset-0 scale-150 rounded-full bg-white/20 blur-xl" />
+          <div className="h-7 w-11 rounded-full bg-white/90 shadow-[0_0_18px_rgba(255,255,255,0.28)]" />
+          <div className="absolute -top-3 left-5 h-5 w-5 rounded-full bg-white" />
+          <div className="absolute -top-7 left-6 h-6 w-2 rounded-full bg-white" />
+          <div className="absolute -top-7 left-9 h-6 w-2 rounded-full bg-white" />
+        </div>
       </div>
-    </div>
+
+      {/* Desktop */}
+      <div className="pointer-events-none absolute bottom-4 right-6 z-20 hidden animate-bunny md:block">
+        <div className="relative">
+          <div className="h-6 w-10 rounded-full bg-white/80" />
+          <div className="absolute -top-3 left-5 h-5 w-5 rounded-full bg-white/90" />
+          <div className="absolute -top-6 left-6 h-5 w-1.5 rounded-full bg-white/80" />
+          <div className="absolute -top-6 left-8 h-5 w-1.5 rounded-full bg-white/80" />
+        </div>
+      </div>
+    </>
   );
 }
