@@ -263,7 +263,7 @@ export default function TimeEntriesClient() {
                   + Neuer Eintrag
                 </button>
               </div>
-
+  {false && (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <ActionPanel
                   title="Monat einreichen"
@@ -321,7 +321,7 @@ export default function TimeEntriesClient() {
                   </div>
                 </ActionPanel>
               </div>
-
+)}
               {loading && (
                 <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
                   Daten werden geladen…
