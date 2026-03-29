@@ -10,14 +10,12 @@ export const metadata = {
 export default function Home() {
   return (
     <main className="relative flex min-h-[100svh] overflow-hidden bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-950 via-zinc-950 to-black text-zinc-100">
-      {/* Hintergrund Glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-64 w-64 -translate-x-1/2 rounded-full bg-amber-400/10 blur-3xl animate-pulse" />
         <div className="absolute left-4 top-20 h-40 w-40 rounded-full bg-pink-400/10 blur-3xl animate-pulse" />
         <div className="absolute bottom-6 right-4 h-44 w-44 rounded-full bg-cyan-400/10 blur-3xl animate-pulse" />
       </div>
 
-      {/* Eier – Mobile separat optimiert */}
       <FloatingEgg
         className="left-[4%] top-[9%] z-0 opacity-85 scale-90 md:hidden"
         delay="0s"
@@ -35,7 +33,6 @@ export default function Home() {
         delay="0.7s"
       />
 
-      {/* Eier – Desktop wie bisher */}
       <FloatingEgg
         className="left-[6%] top-[12%] z-0 hidden opacity-60 scale-75 md:block md:scale-100"
         delay="0s"
@@ -53,7 +50,6 @@ export default function Home() {
         delay="0.8s"
       />
 
-      {/* Hase */}
       <Bunny />
 
       <div
@@ -69,11 +65,10 @@ export default function Home() {
           <div className="relative overflow-hidden rounded-[24px] border border-white/10 bg-white/5 shadow-2xl backdrop-blur-xl sm:rounded-3xl">
             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-amber-400/20 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-16 -left-16 h-40 w-40 rounded-full bg-pink-500/20 blur-3xl" />
-
             <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
 
-            <div className="relative grid gap-6 p-5 sm:gap-8 sm:p-8 md:grid-cols-[1fr,auto] md:p-12">
-              <div className="flex flex-col items-center text-center md:items-start md:text-left">
+            <div className="relative p-5 sm:p-8 md:p-12">
+              <div className="flex flex-col items-center text-center">
                 <div className="relative mb-4 animate-float">
                   <div className="absolute inset-0 rounded-full bg-amber-300/20 blur-2xl" />
                   <img
@@ -92,9 +87,8 @@ export default function Home() {
                 </h1>
 
                 <p className="mt-3 max-w-prose text-sm leading-6 text-zinc-300 sm:text-base md:text-lg">
-                  Die unternehmensweite Zeiterfassung – schnell, sicher und
-                  mobil. Jetzt im neuen Osterlook. Allen Mitarbeitern eine
-                  frohe Osterzeit!
+                  Zeiterfassung für alle Mitarbeiter – schnell, sicher und mobil.
+                  Im frischen Osterlook.
                 </p>
 
                 <div className="mt-6 w-full sm:w-auto">
@@ -105,13 +99,13 @@ export default function Home() {
                     Zum Login →
                   </Link>
                 </div>
-              </div>
 
-              <div className="grid gap-3 text-sm">
-                <Feature line1="Schnell erfassen" line2="per Knopfdruck" />
-                <Feature line1="Freigabe" line2="für Vorgesetzte" />
-                <Feature line1="Export" line2="CSV möglich" />
-                <Feature line1="Rollen" line2="Admin / Mitarbeiter" />
+                <div className="mt-6 grid w-full grid-cols-2 gap-3 md:mt-8 md:max-w-xl">
+                  <InfoTile icon="⚡" title="Schnell" text="per Knopfdruck" />
+                  <InfoTile icon="✅" title="Freigabe" text="für Vorgesetzte" />
+                  <InfoTile icon="📄" title="Export" text="CSV möglich" />
+                  <InfoTile icon="🔐" title="Rollen" text="Admin / Mitarbeiter" />
+                </div>
               </div>
             </div>
           </div>
@@ -125,11 +119,20 @@ export default function Home() {
   );
 }
 
-function Feature({ line1, line2 }: { line1: string; line2: string }) {
+function InfoTile({
+  icon,
+  title,
+  text,
+}: {
+  icon: string;
+  title: string;
+  text: string;
+}) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-      <p className="font-semibold">{line1}</p>
-      <p className="text-zinc-400">{line2}</p>
+    <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 backdrop-blur-sm">
+      <div className="mb-2 text-lg">{icon}</div>
+      <p className="text-sm font-semibold text-zinc-100">{title}</p>
+      <p className="text-xs leading-5 text-zinc-400 sm:text-sm">{text}</p>
     </div>
   );
 }
@@ -158,7 +161,6 @@ function FloatingEgg({
 function Bunny() {
   return (
     <>
-      {/* Mobile */}
       <div className="pointer-events-none absolute bottom-24 right-3 z-20 animate-bunny md:hidden">
         <div className="relative scale-95">
           <div className="absolute inset-0 scale-150 rounded-full bg-white/20 blur-xl" />
@@ -169,7 +171,6 @@ function Bunny() {
         </div>
       </div>
 
-      {/* Desktop */}
       <div className="pointer-events-none absolute bottom-4 right-6 z-20 hidden animate-bunny md:block">
         <div className="relative">
           <div className="h-6 w-10 rounded-full bg-white/80" />
