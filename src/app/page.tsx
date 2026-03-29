@@ -39,7 +39,7 @@ export default function Home() {
             </span>
 
             <h1 className="mt-5 text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl">
-              Zeiterfassung,
+              Zeiterfassung, 
               <span className="block bg-gradient-to-r from-amber-200 via-white to-pink-200 bg-clip-text text-transparent">
                 modern und einfach.
               </span>
@@ -47,8 +47,7 @@ export default function Home() {
 
             <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg md:mx-0">
               Für Doppelweck gemacht: Arbeitszeiten schnell erfassen, sicher
-              verwalten und mobil nutzen – jetzt in einem frischen
-              saisonalen Design.
+              verwalten und mobil nutzen – jetzt im Frühlingslook
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
@@ -94,18 +93,18 @@ export default function Home() {
 
                 <div className="mt-8 space-y-4">
                   <PreviewRow
-                    label="Arbeitsbeginn"
-                    value="06:15 Uhr"
+                    label=""
+                    value="Allen Mitarbeitern"
                     accent="from-amber-200/30 to-amber-100/5"
                   />
                   <PreviewRow
-                    label="Status"
-                    value="Heute aktiv"
+                    label=""
+                    value="wünschen wir"
                     accent="from-emerald-200/25 to-emerald-100/5"
                   />
                   <PreviewRow
-                    label="Freigaben"
-                    value="2 offen"
+                    label=""
+                    value="Frohe Ostern !"
                     accent="from-pink-200/25 to-pink-100/5"
                   />
                 </div>
