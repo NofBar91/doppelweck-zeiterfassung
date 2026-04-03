@@ -5,7 +5,14 @@ import React from "react";
 import { toCSV } from "@/lib/csv";
 
 type Role = "ADMIN" | "EMPLOYEE";
-type User = { id: string; email: string; name: string; role: Role; createdAt?: string };
+type User = {
+  id: string;
+  email: string;
+  name: string;
+  role: Role;
+  createdAt?: string;
+};
+
 type Invite = {
   id: string;
   email: string;
@@ -16,7 +23,11 @@ type Invite = {
   createdAt: string;
 };
 
-function download(filename: string, text: string, mime = "text/csv;charset=utf-8") {
+function download(
+  filename: string,
+  text: string,
+  mime = "text/csv;charset=utf-8"
+) {
   const blob = new Blob([text], { type: mime });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -27,6 +38,7 @@ function download(filename: string, text: string, mime = "text/csv;charset=utf-8
   a.remove();
   URL.revokeObjectURL(url);
 }
+
 function errMsg(e: unknown) {
   return e instanceof Error ? e.message : "Unbekannter Fehler";
 }
@@ -54,11 +66,11 @@ export default function UsersClient() {
       setLoading(false);
     }
   }
+
   React.useEffect(() => {
     void load();
   }, []);
 
-  // ===== Direkt anlegen (Name/Email/Passwort/Rolle) =====
   const [directName, setDirectName] = React.useState("");
   const [directEmail, setDirectEmail] = React.useState("");
   const [directPassword, setDirectPassword] = React.useState("");
@@ -69,6 +81,7 @@ export default function UsersClient() {
     e.preventDefault();
     if (busyCreate) return;
     setBusyCreate(true);
+
     try {
       const res = await fetch("/api/admin/users", {
         method: "POST",
@@ -80,10 +93,11 @@ export default function UsersClient() {
           role: directRole,
         }),
       });
+
       if (!res.ok) {
         throw new Error(await res.text());
       }
-      // Felder leeren & Liste neu laden
+
       setDirectName("");
       setDirectEmail("");
       setDirectPassword("");
@@ -97,7 +111,6 @@ export default function UsersClient() {
     }
   }
 
-  // ===== Einladungen =====
   const [inviteEmail, setInviteEmail] = React.useState("");
   const [inviteRole, setInviteRole] = React.useState<Role>("EMPLOYEE");
   const [inviteLink, setInviteLink] = React.useState<string | null>(null);
@@ -130,13 +143,12 @@ export default function UsersClient() {
             }
           }
         } catch {
-          /* plain text lassen */
+          // plain text lassen
         }
         alert(msg || "Einladung fehlgeschlagen");
         return;
       }
 
-      // ✅ robust für beide Response-Formen: { invite } oder direkt Invite-Objekt
       const json = await res.json();
       const token: string | undefined = json?.invite?.token ?? json?.token;
       if (token) {
@@ -155,10 +167,8 @@ export default function UsersClient() {
     }
   }
 
-
   async function revokeInvite(id: string) {
     if (!confirm("Einladung widerrufen?")) return;
-    // NEU: RESTful Pfad-Endpoint
     const res = await fetch(`/api/admin/invites/${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
@@ -176,7 +186,6 @@ export default function UsersClient() {
       .catch(() => alert("Kopieren fehlgeschlagen"));
   }
 
-  // ===== Nutzer-Operationen =====
   async function updateRole(id: string, role: Role) {
     const res = await fetch(`/api/admin/users/${encodeURIComponent(id)}`, {
       method: "PUT",
@@ -191,8 +200,10 @@ export default function UsersClient() {
   }
 
   async function deleteUser(id: string) {
-    if (!confirm("Nutzer wirklich löschen? Alle zugehörigen Zeiten bleiben bestehen.")) return;
-    // NEU: RESTful Pfad-Endpoint
+    if (
+      !confirm("Nutzer wirklich löschen? Alle zugehörigen Zeiten bleiben bestehen.")
+    )
+      return;
     const res = await fetch(`/api/admin/users/${encodeURIComponent(id)}`, {
       method: "DELETE",
     });
@@ -225,174 +236,469 @@ export default function UsersClient() {
   }
 
   return (
-    <div className="space-y-8">
-      {error && <p className="text-red-600">{error}</p>}
-      {loading && <p>Daten werden geladen…</p>}
+    <div className="space-y-6">
+      {error && (
+        <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+          {error}
+        </div>
+      )}
+
+      {loading && (
+        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+          Daten werden geladen…
+        </div>
+      )}
 
       {/* Direkt anlegen */}
-      <section className="p-4 border rounded-2xl space-y-3">
-        <h2 className="font-semibold">Mitarbeiter direkt anlegen</h2>
-        <form onSubmit={createDirect} className="grid grid-cols-1 md:grid-cols-5 gap-3">
+      <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Mitarbeiter direkt anlegen
+        </h2>
+        <p className="mt-1 text-sm leading-6 text-zinc-400">
+          Lege Mitarbeiter direkt mit Passwort und Rolle an.
+        </p>
+
+        <form
+          onSubmit={createDirect}
+          className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-5"
+        >
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-name">Name</label>
-            <input id="direct-name" className="w-full border rounded px-3 py-2"
-              value={directName} onChange={(e) => setDirectName(e.target.value)} placeholder="Max Mustermann" />
+            <FormField label="Name" htmlFor="direct-name">
+              <input
+                id="direct-name"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                value={directName}
+                onChange={(e) => setDirectName(e.target.value)}
+                placeholder="Max Mustermann"
+              />
+            </FormField>
           </div>
+
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-email">E-Mail</label>
-            <input id="direct-email" className="w-full border rounded px-3 py-2" type="email"
-              value={directEmail} onChange={(e) => setDirectEmail(e.target.value)} required placeholder="max@firma.de" />
+            <FormField label="E-Mail" htmlFor="direct-email">
+              <input
+                id="direct-email"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                type="email"
+                value={directEmail}
+                onChange={(e) => setDirectEmail(e.target.value)}
+                required
+                placeholder="max@firma.de"
+              />
+            </FormField>
           </div>
+
           <div>
-            <label className="block text-sm mb-1" htmlFor="direct-role">Rolle</label>
-            <select id="direct-role" className="w-full border rounded px-3 py-2"
-              value={directRole} onChange={(e) => setDirectRole(e.target.value as Role)}>
-              <option value="EMPLOYEE">EMPLOYEE</option>
-              <option value="ADMIN">ADMIN</option>
-            </select>
+            <FormField label="Rolle" htmlFor="direct-role">
+              <select
+                id="direct-role"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                value={directRole}
+                onChange={(e) => setDirectRole(e.target.value as Role)}
+              >
+                <option value="EMPLOYEE">EMPLOYEE</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </FormField>
           </div>
+
           <div className="md:col-span-2">
-            <label className="block text-sm mb-1" htmlFor="direct-password">Passwort (min. 8 Zeichen)</label>
-            <input id="direct-password" className="w-full border rounded px-3 py-2" type="password"
-              value={directPassword} onChange={(e) => setDirectPassword(e.target.value)} minLength={8} required placeholder="Sicheres Passwort" />
+            <FormField
+              label="Passwort (min. 8 Zeichen)"
+              htmlFor="direct-password"
+            >
+              <input
+                id="direct-password"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                type="password"
+                value={directPassword}
+                onChange={(e) => setDirectPassword(e.target.value)}
+                minLength={8}
+                required
+                placeholder="Sicheres Passwort"
+              />
+            </FormField>
           </div>
+
           <div className="md:col-span-3 flex items-end">
-            <button disabled={busyCreate} className="rounded-2xl px-4 py-2 border shadow">
+            <button
+              disabled={busyCreate}
+              className="w-full rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-3 font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(251,191,36,0.18)] transition hover:scale-[1.02] disabled:opacity-70 md:w-auto"
+            >
               {busyCreate ? "Lege an…" : "Direkt anlegen"}
             </button>
           </div>
         </form>
-        <p className="text-xs text-gray-500">
-          Hinweis: Beim direkten Anlegen vergibst du das Passwort. Alternativ kannst du unten eine Einladung senden,
-          damit der Mitarbeiter sein Passwort selbst setzt.
+
+        <p className="mt-4 text-xs leading-5 text-zinc-500">
+          Hinweis: Beim direkten Anlegen vergibst du das Passwort. Alternativ
+          kannst du unten eine Einladung senden, damit der Mitarbeiter sein
+          Passwort selbst setzt.
         </p>
       </section>
 
       {/* Einladen */}
-      <section className="p-4 border rounded-2xl space-y-3">
-        <h2 className="font-semibold">Nutzer einladen</h2>
-        <form onSubmit={createInvite} className="flex flex-col md:flex-row gap-2 md:items-end">
-          <div className="flex-1">
-            <label className="block text-sm mb-1" htmlFor="invite-email">E-Mail</label>
-            <input id="invite-email" className="w-full border rounded px-3 py-2" type="email"
-              value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required placeholder="max@firma.de" />
-          </div>
+      <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <label className="block text-sm mb-1" htmlFor="invite-role">Rolle</label>
-            <select id="invite-role" className="border rounded px-3 py-2"
-              value={inviteRole} onChange={(e) => setInviteRole(e.target.value as Role)}>
-              <option value="EMPLOYEE">EMPLOYEE</option>
-              <option value="ADMIN">ADMIN</option>
-            </select>
+            <h2 className="text-lg font-semibold text-white">
+              Nutzer einladen
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-zinc-400">
+              Erzeuge einen Einladungslink für neue Mitarbeiter.
+            </p>
           </div>
-          <button disabled={busyInvite} className="rounded-2xl px-4 py-2 border shadow">
-            {busyInvite ? "Sende…" : "Einladung senden"}
-          </button>
-          <button type="button" onClick={exportUsersCsv} className="rounded-2xl px-4 py-2 border shadow">
+
+          <button
+            type="button"
+            onClick={exportUsersCsv}
+            className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15"
+          >
             Nutzer als CSV
           </button>
+        </div>
+
+        <form
+          onSubmit={createInvite}
+          className="mt-4 flex flex-col gap-3 md:flex-row md:items-end"
+        >
+          <div className="flex-1">
+            <FormField label="E-Mail" htmlFor="invite-email">
+              <input
+                id="invite-email"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                required
+                placeholder="max@firma.de"
+              />
+            </FormField>
+          </div>
+
+          <div className="md:w-48">
+            <FormField label="Rolle" htmlFor="invite-role">
+              <select
+                id="invite-role"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                value={inviteRole}
+                onChange={(e) => setInviteRole(e.target.value as Role)}
+              >
+                <option value="EMPLOYEE">EMPLOYEE</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </FormField>
+          </div>
+
+          <button
+            disabled={busyInvite}
+            className="rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-3 font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(251,191,36,0.18)] transition hover:scale-[1.02] disabled:opacity-70"
+          >
+            {busyInvite ? "Sende…" : "Einladung senden"}
+          </button>
         </form>
+
         {inviteLink && (
-          <p className="text-sm">
-            Einladungslink:&nbsp;
-            <a className="underline" href={inviteLink}>{inviteLink}</a>{" "}
-            <button className="underline" onClick={() => copyToClipboard(inviteLink)}>Kopieren</button>
-          </p>
+          <div className="mt-4 rounded-2xl border border-amber-300/15 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+            <p className="break-all">{inviteLink}</p>
+            <button
+              className="mt-2 rounded-xl border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-sm text-amber-50"
+              onClick={() => copyToClipboard(inviteLink)}
+            >
+              Link kopieren
+            </button>
+          </div>
         )}
       </section>
 
       {/* Offene Einladungen */}
-      <section className="space-y-2">
-        <h3 className="font-semibold">Offene Einladungen</h3>
-        {invites.length === 0 ? (
-          <p className="text-sm text-gray-500">Keine offenen Einladungen.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left border-b">
-                  <th className="py-2 pr-4">E-Mail</th>
-                  <th className="py-2 pr-4">Rolle</th>
-                  <th className="py-2 pr-4">Erstellt</th>
-                  <th className="py-2 pr-4">Gültig bis</th>
-                  <th className="py-2 pr-4">Aktionen</th>
-                </tr>
-              </thead>
-              <tbody>
-                {invites.map((inv) => {
-                  const base = process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin;
-                  const link = `${base}/invite/${inv.token}`;
-                  return (
-                    <tr key={inv.id} className="border-b">
-                      <td className="py-2 pr-4">{inv.email}</td>
-                      <td className="py-2 pr-4">{inv.role}</td>
-                      <td className="py-2 pr-4">{new Date(inv.createdAt).toLocaleString()}</td>
-                      <td className="py-2 pr-4">{new Date(inv.expiresAt).toLocaleString()}</td>
-                      <td className="py-2 pr-4 space-x-2">
-                        <button type="button" className="underline" onClick={() => copyToClipboard(link)}>
-                          Link kopieren
-                        </button>
+      <section className="space-y-3">
+        <div>
+          <h3 className="text-lg font-semibold text-white">
+            Offene Einladungen
+          </h3>
+          <p className="text-sm text-zinc-400">
+            Noch nicht eingelöste Einladungslinks.
+          </p>
+        </div>
 
-                        <button type="button" className="underline text-red-600" onClick={() => revokeInvite(inv.id)}>
-                          Widerrufen
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        {invites.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+            Keine offenen Einladungen.
           </div>
+        ) : (
+          <>
+            {/* Mobile */}
+            <div className="grid gap-3 lg:hidden">
+              {invites.map((inv) => {
+                const base =
+                  process.env.NEXT_PUBLIC_BASE_URL ?? window.location.origin;
+                const link = `${base}/invite/${inv.token}`;
+
+                return (
+                  <article
+                    key={inv.id}
+                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                  >
+                    <div className="space-y-3">
+                      <InfoPair label="E-Mail" value={inv.email} />
+                      <InfoPair label="Rolle" value={inv.role} />
+                      <InfoPair
+                        label="Erstellt"
+                        value={new Date(inv.createdAt).toLocaleString()}
+                      />
+                      <InfoPair
+                        label="Gültig bis"
+                        value={new Date(inv.expiresAt).toLocaleString()}
+                      />
+                    </div>
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                        onClick={() => copyToClipboard(link)}
+                      >
+                        Link kopieren
+                      </button>
+
+                      <button
+                        type="button"
+                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                        onClick={() => revokeInvite(inv.id)}
+                      >
+                        Widerrufen
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+
+            {/* Desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10 text-left text-zinc-400">
+                      <th className="px-4 py-3">E-Mail</th>
+                      <th className="px-4 py-3">Rolle</th>
+                      <th className="px-4 py-3">Erstellt</th>
+                      <th className="px-4 py-3">Gültig bis</th>
+                      <th className="px-4 py-3">Aktionen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {invites.map((inv) => {
+                      const base =
+                        process.env.NEXT_PUBLIC_BASE_URL ??
+                        window.location.origin;
+                      const link = `${base}/invite/${inv.token}`;
+
+                      return (
+                        <tr
+                          key={inv.id}
+                          className="border-b border-white/10 last:border-b-0"
+                        >
+                          <td className="px-4 py-3">{inv.email}</td>
+                          <td className="px-4 py-3">{inv.role}</td>
+                          <td className="px-4 py-3">
+                            {new Date(inv.createdAt).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3">
+                            {new Date(inv.expiresAt).toLocaleString()}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                onClick={() => copyToClipboard(link)}
+                              >
+                                Link kopieren
+                              </button>
+
+                              <button
+                                type="button"
+                                className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                onClick={() => revokeInvite(inv.id)}
+                              >
+                                Widerrufen
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         )}
       </section>
 
       {/* Nutzerliste */}
-      <section className="space-y-2">
-        <h3 className="font-semibold">Alle Nutzer</h3>
+      <section className="space-y-3">
+        <div>
+          <h3 className="text-lg font-semibold text-white">Alle Nutzer</h3>
+          <p className="text-sm text-zinc-400">
+            Rollen ändern, Passwort-Reset auslösen oder Nutzer entfernen.
+          </p>
+        </div>
+
         {users.length === 0 ? (
-          <p className="text-sm text-gray-500">Keine Nutzer gefunden.</p>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+            Keine Nutzer gefunden.
+          </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="text-left border-b">
-                  <th className="py-2 pr-4">Name</th>
-                  <th className="py-2 pr-4">E-Mail</th>
-                  <th className="py-2 pr-4">Rolle</th>
-                  <th className="py-2 pr-4">Aktionen</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((u) => (
-                  <tr key={u.id} className="border-b">
-                    <td className="py-2 pr-4">{u.name}</td>
-                    <td className="py-2 pr-4">{u.email}</td>
-                    <td className="py-2 pr-4">
+          <>
+            {/* Mobile */}
+            <div className="grid gap-3 lg:hidden">
+              {users.map((u) => (
+                <article
+                  key={u.id}
+                  className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                >
+                  <div className="space-y-3">
+                    <InfoPair label="Name" value={u.name || "—"} />
+                    <InfoPair label="E-Mail" value={u.email} />
+                  </div>
+
+                  <div className="mt-4">
+                    <FormField label="Rolle" htmlFor={`role-mobile-${u.id}`}>
                       <select
-                        className="border rounded px-2 py-1"
+                        id={`role-mobile-${u.id}`}
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
                         value={u.role}
                         onChange={(e) => updateRole(u.id, e.target.value as Role)}
                       >
                         <option value="EMPLOYEE">EMPLOYEE</option>
                         <option value="ADMIN">ADMIN</option>
                       </select>
-                    </td>
-                    <td className="py-2 pr-4 space-x-2">
-                      <button type="button" className="underline" onClick={() => sendReset(u.email)}>
-                        Passwort-Reset senden
-                      </button>
+                    </FormField>
+                  </div>
 
-                      <button type="button" className="underline text-red-600" onClick={() => deleteUser(u.id)}>
-                        Löschen
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                      onClick={() => sendReset(u.email)}
+                    >
+                      Passwort-Reset senden
+                    </button>
+
+                    <button
+                      type="button"
+                      className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                      onClick={() => deleteUser(u.id)}
+                    >
+                      Löschen
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            {/* Desktop */}
+            <div className="hidden overflow-x-auto lg:block">
+              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10 text-left text-zinc-400">
+                      <th className="px-4 py-3">Name</th>
+                      <th className="px-4 py-3">E-Mail</th>
+                      <th className="px-4 py-3">Rolle</th>
+                      <th className="px-4 py-3">Aktionen</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {users.map((u) => (
+                      <tr
+                        key={u.id}
+                        className="border-b border-white/10 last:border-b-0"
+                      >
+                        <td className="px-4 py-3">{u.name || "—"}</td>
+                        <td className="px-4 py-3">{u.email}</td>
+                        <td className="px-4 py-3">
+                          <select
+                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                            value={u.role}
+                            onChange={(e) =>
+                              updateRole(u.id, e.target.value as Role)
+                            }
+                          >
+                            <option value="EMPLOYEE">EMPLOYEE</option>
+                            <option value="ADMIN">ADMIN</option>
+                          </select>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                              onClick={() => sendReset(u.email)}
+                            >
+                              Passwort-Reset senden
+                            </button>
+
+                            <button
+                              type="button"
+                              className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                              onClick={() => deleteUser(u.id)}
+                            >
+                              Löschen
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
         )}
       </section>
+    </div>
+  );
+}
+
+function FormField({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="mb-2 block text-sm font-medium text-zinc-300"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function InfoPair({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+        {label}
+      </p>
+      <p className="mt-1 break-words text-sm text-zinc-200">{value}</p>
     </div>
   );
 }
