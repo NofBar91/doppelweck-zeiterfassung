@@ -514,13 +514,13 @@ export default function TimeEntriesClient() {
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-6 backdrop-blur-sm sm:items-center sm:p-4"
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-3 pt-4 backdrop-blur-sm md:items-center md:p-6"
           role="dialog"
           aria-modal="true"
         >
           <form
             onSubmit={handleSave}
-            className="flex max-h-[92svh] w-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#181310] shadow-2xl sm:max-w-xl"
+            className="flex w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#181310] shadow-2xl max-h-[calc(100svh-1rem)] md:max-h-[90svh]"
           >
             <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,248,240,0.02))]" />
@@ -539,7 +539,7 @@ export default function TimeEntriesClient() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+            <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5 sm:px-6">
               <div className="space-y-4">
                 <FormField label="Datum" htmlFor="date">
                   <input
@@ -554,7 +554,7 @@ export default function TimeEntriesClient() {
                   />
                 </FormField>
 
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-2">
                   <FormField label="Von" htmlFor="start">
                     <input
                       id="start"
@@ -616,7 +616,7 @@ export default function TimeEntriesClient() {
               </div>
             </div>
 
-            <div className="sticky bottom-0 border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
+            <div className="border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
