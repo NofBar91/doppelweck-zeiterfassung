@@ -1,5 +1,8 @@
 // src/app/page.tsx
 import Link from "next/link";
+import PageShell from "@/components/ui/PageShell";
+import { getActiveTheme } from "@/lib/theme-server";
+import { cn } from "@/lib/cn";
 
 export const metadata = {
   title: "Doppelweck • Zeiterfassung",
@@ -8,14 +11,10 @@ export const metadata = {
 };
 
 export default function Home() {
-  return (
-    <main className="relative min-h-[100svh] overflow-hidden bg-[#14110f] text-zinc-100">
-      {/* Hintergrund */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,222,179,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(120,72,32,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(217,119,6,0.12),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:36px_36px]" />
-      </div>
+  const theme = getActiveTheme();
 
+  return (
+    <PageShell maxWidth="6xl">
       {/* weiche Formen */}
       <div className="pointer-events-none absolute left-[-40px] top-[18%] h-32 w-24 rotate-[-18deg] rounded-[999px] bg-gradient-to-b from-amber-100/15 to-orange-400/10 blur-sm md:left-[6%] md:h-44 md:w-32" />
       <div className="pointer-events-none absolute right-[-30px] top-[14%] h-28 w-20 rotate-[16deg] rounded-[999px] bg-gradient-to-b from-stone-200/10 to-amber-300/10 blur-sm md:right-[8%] md:h-40 md:w-28" />
@@ -23,7 +22,7 @@ export default function Home() {
       <div className="pointer-events-none absolute bottom-[12%] right-[-16px] h-24 w-16 rotate-[-12deg] rounded-[999px] bg-gradient-to-b from-amber-200/10 to-yellow-100/10 blur-sm md:right-[10%] md:h-32 md:w-24" />
 
       <div
-        className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl items-center px-5 py-8 sm:px-8"
+        className="relative z-10 flex min-h-[100svh] w-full items-center px-5 py-8 sm:px-8"
         style={{
           paddingTop: "max(1.5rem, env(safe-area-inset-top))",
           paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
@@ -34,7 +33,12 @@ export default function Home() {
         <section className="grid w-full items-center gap-10 md:grid-cols-[1.1fr_0.9fr] md:gap-14">
           {/* Linke Seite */}
           <div className="text-center md:text-left">
-            <span className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-100/10 px-4 py-2 text-xs font-medium tracking-wide text-amber-100 backdrop-blur">
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full px-4 py-2 text-xs font-medium tracking-wide backdrop-blur",
+                theme.badge.base
+              )}
+            >
               Doppelweck Zeiterfassung
             </span>
 
@@ -53,7 +57,10 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-6 py-3 text-base font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02]"
+                className={cn(
+                  "inline-flex items-center justify-center rounded-2xl px-6 py-3 text-base font-semibold transition hover:scale-[1.02]",
+                  theme.button.primary
+                )}
               >
                 Zum Login
               </Link>
@@ -68,8 +75,15 @@ export default function Home() {
           <div className="relative">
             <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-amber-200/10 via-transparent to-orange-300/10 blur-2xl" />
 
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] p-6 shadow-2xl backdrop-blur-xl sm:p-8">
-              <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent_45%,rgba(255,248,240,0.02))]" />
+            <div
+              className={cn(
+                "relative overflow-hidden rounded-[2rem] p-6 sm:p-8",
+                theme.surface.card
+              )}
+            >
+              <div
+                className={cn("absolute inset-0", theme.surface.overlay)}
+              />
 
               <div className="relative">
                 <div className="flex items-center justify-between">
@@ -119,7 +133,7 @@ export default function Home() {
           </div>
         </section>
       </div>
-    </main>
+    </PageShell>
   );
 }
 
