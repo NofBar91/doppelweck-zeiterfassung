@@ -3,6 +3,8 @@
 
 import React from "react";
 import { toCSV } from "@/lib/csv";
+import { getThemeClasses } from "@/lib/theme-classes";
+import { cn } from "@/lib/cn";
 
 type Role = "ADMIN" | "EMPLOYEE";
 type User = {
@@ -44,6 +46,8 @@ function errMsg(e: unknown) {
 }
 
 export default function UsersClient() {
+  const theme = getThemeClasses();
+
   const [users, setUsers] = React.useState<User[]>([]);
   const [invites, setInvites] = React.useState<Invite[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -244,13 +248,12 @@ export default function UsersClient() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+        <div className={cn("rounded-2xl px-4 py-4 text-sm text-zinc-300", theme.surface.softCard)}>
           Daten werden geladen…
         </div>
       )}
 
-      {/* Direkt anlegen */}
-      <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:p-5">
+      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
         <h2 className="text-lg font-semibold text-white">
           Mitarbeiter direkt anlegen
         </h2>
@@ -266,7 +269,11 @@ export default function UsersClient() {
             <FormField label="Name" htmlFor="direct-name">
               <input
                 id="direct-name"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 value={directName}
                 onChange={(e) => setDirectName(e.target.value)}
                 placeholder="Max Mustermann"
@@ -278,7 +285,11 @@ export default function UsersClient() {
             <FormField label="E-Mail" htmlFor="direct-email">
               <input
                 id="direct-email"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 type="email"
                 value={directEmail}
                 onChange={(e) => setDirectEmail(e.target.value)}
@@ -292,7 +303,11 @@ export default function UsersClient() {
             <FormField label="Rolle" htmlFor="direct-role">
               <select
                 id="direct-role"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 value={directRole}
                 onChange={(e) => setDirectRole(e.target.value as Role)}
               >
@@ -309,7 +324,11 @@ export default function UsersClient() {
             >
               <input
                 id="direct-password"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 type="password"
                 value={directPassword}
                 onChange={(e) => setDirectPassword(e.target.value)}
@@ -323,7 +342,10 @@ export default function UsersClient() {
           <div className="md:col-span-3 flex items-end">
             <button
               disabled={busyCreate}
-              className="w-full rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02] disabled:opacity-70 md:w-auto"
+              className={cn(
+                "w-full rounded-2xl px-4 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70 md:w-auto",
+                theme.button.primary
+              )}
             >
               {busyCreate ? "Lege an…" : "Direkt anlegen"}
             </button>
@@ -337,8 +359,7 @@ export default function UsersClient() {
         </p>
       </section>
 
-      {/* Einladen */}
-      <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:p-5">
+      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white">
@@ -352,7 +373,10 @@ export default function UsersClient() {
           <button
             type="button"
             onClick={exportUsersCsv}
-            className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15"
+            className={cn(
+              "rounded-2xl px-4 py-3 text-sm font-medium transition",
+              theme.button.secondary
+            )}
           >
             Nutzer als CSV
           </button>
@@ -366,7 +390,11 @@ export default function UsersClient() {
             <FormField label="E-Mail" htmlFor="invite-email">
               <input
                 id="invite-email"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
@@ -380,7 +408,11 @@ export default function UsersClient() {
             <FormField label="Rolle" htmlFor="invite-role">
               <select
                 id="invite-role"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as Role)}
               >
@@ -392,17 +424,20 @@ export default function UsersClient() {
 
           <button
             disabled={busyInvite}
-            className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02] disabled:opacity-70"
+            className={cn(
+              "rounded-2xl px-4 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70",
+              theme.button.primary
+            )}
           >
             {busyInvite ? "Sende…" : "Einladung senden"}
           </button>
         </form>
 
         {inviteLink && (
-          <div className="mt-4 rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
+          <div className={cn("mt-4 rounded-2xl border px-4 py-3 text-sm", theme.button.warning)}>
             <p className="break-all">{inviteLink}</p>
             <button
-              className="mt-2 rounded-xl border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-sm text-amber-50"
+              className={cn("mt-2 rounded-xl px-3 py-2 text-sm", theme.button.secondary)}
               onClick={() => copyToClipboard(inviteLink)}
             >
               Link kopieren
@@ -411,7 +446,6 @@ export default function UsersClient() {
         )}
       </section>
 
-      {/* Offene Einladungen */}
       <section className="space-y-3">
         <div>
           <h3 className="text-lg font-semibold text-white">
@@ -423,12 +457,11 @@ export default function UsersClient() {
         </div>
 
         {invites.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+          <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
             Keine offenen Einladungen.
           </div>
         ) : (
           <>
-            {/* Mobile */}
             <div className="grid gap-3 lg:hidden">
               {invites.map((inv) => {
                 const base =
@@ -438,7 +471,7 @@ export default function UsersClient() {
                 return (
                   <article
                     key={inv.id}
-                    className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                    className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
                   >
                     <div className="space-y-3">
                       <InfoPair label="E-Mail" value={inv.email} />
@@ -456,7 +489,10 @@ export default function UsersClient() {
                     <div className="mt-4 flex flex-wrap gap-2">
                       <button
                         type="button"
-                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.secondary
+                        )}
                         onClick={() => copyToClipboard(link)}
                       >
                         Link kopieren
@@ -464,7 +500,10 @@ export default function UsersClient() {
 
                       <button
                         type="button"
-                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.danger
+                        )}
                         onClick={() => revokeInvite(inv.id)}
                       >
                         Widerrufen
@@ -475,9 +514,8 @@ export default function UsersClient() {
               })}
             </div>
 
-            {/* Desktop */}
             <div className="hidden overflow-x-auto lg:block">
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+              <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10 text-left text-zinc-400">
@@ -512,7 +550,10 @@ export default function UsersClient() {
                             <div className="flex flex-wrap gap-2">
                               <button
                                 type="button"
-                                className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.secondary
+                                )}
                                 onClick={() => copyToClipboard(link)}
                               >
                                 Link kopieren
@@ -520,7 +561,10 @@ export default function UsersClient() {
 
                               <button
                                 type="button"
-                                className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.danger
+                                )}
                                 onClick={() => revokeInvite(inv.id)}
                               >
                                 Widerrufen
@@ -538,7 +582,6 @@ export default function UsersClient() {
         )}
       </section>
 
-      {/* Nutzerliste */}
       <section className="space-y-3">
         <div>
           <h3 className="text-lg font-semibold text-white">Alle Nutzer</h3>
@@ -548,17 +591,16 @@ export default function UsersClient() {
         </div>
 
         {users.length === 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+          <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
             Keine Nutzer gefunden.
           </div>
         ) : (
           <>
-            {/* Mobile */}
             <div className="grid gap-3 lg:hidden">
               {users.map((u) => (
                 <article
                   key={u.id}
-                  className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                  className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
                 >
                   <div className="space-y-3">
                     <InfoPair label="Name" value={u.name || "—"} />
@@ -569,7 +611,11 @@ export default function UsersClient() {
                     <FormField label="Rolle" htmlFor={`role-mobile-${u.id}`}>
                       <select
                         id={`role-mobile-${u.id}`}
-                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                        className={cn(
+                          "w-full rounded-2xl px-4 py-3",
+                          theme.input.base,
+                          theme.input.focus
+                        )}
                         value={u.role}
                         onChange={(e) => updateRole(u.id, e.target.value as Role)}
                       >
@@ -582,7 +628,10 @@ export default function UsersClient() {
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
                       type="button"
-                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                      className={cn(
+                        "rounded-xl px-3 py-2 text-sm",
+                        theme.button.secondary
+                      )}
                       onClick={() => sendReset(u.email)}
                     >
                       Passwort-Reset senden
@@ -590,7 +639,10 @@ export default function UsersClient() {
 
                     <button
                       type="button"
-                      className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                      className={cn(
+                        "rounded-xl px-3 py-2 text-sm",
+                        theme.button.danger
+                      )}
                       onClick={() => deleteUser(u.id)}
                     >
                       Löschen
@@ -600,9 +652,8 @@ export default function UsersClient() {
               ))}
             </div>
 
-            {/* Desktop */}
             <div className="hidden overflow-x-auto lg:block">
-              <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+              <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/10 text-left text-zinc-400">
@@ -622,7 +673,11 @@ export default function UsersClient() {
                         <td className="px-4 py-3">{u.email}</td>
                         <td className="px-4 py-3">
                           <select
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                            className={cn(
+                              "rounded-xl px-3 py-2",
+                              theme.input.base,
+                              theme.input.focus
+                            )}
                             value={u.role}
                             onChange={(e) =>
                               updateRole(u.id, e.target.value as Role)
@@ -636,7 +691,10 @@ export default function UsersClient() {
                           <div className="flex flex-wrap gap-2">
                             <button
                               type="button"
-                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm",
+                                theme.button.secondary
+                              )}
                               onClick={() => sendReset(u.email)}
                             >
                               Passwort-Reset senden
@@ -644,7 +702,10 @@ export default function UsersClient() {
 
                             <button
                               type="button"
-                              className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm",
+                                theme.button.danger
+                              )}
                               onClick={() => deleteUser(u.id)}
                             >
                               Löschen
