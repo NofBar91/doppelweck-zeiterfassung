@@ -219,51 +219,52 @@ export default function TimeEntriesClient() {
   }
 
   return (
-    <main className="relative min-h-[100svh] overflow-hidden bg-[#0b0b0f] text-zinc-100">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.10),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.10),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:34px_34px]" />
-      </div>
+  <main className="relative min-h-[100svh] overflow-hidden bg-[#14110f] text-zinc-100">
+    <div className="absolute inset-0">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,222,179,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(120,72,32,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(217,119,6,0.12),transparent_30%)]" />
+      <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:34px_34px]" />
+    </div>
 
-      <div
-        className="relative z-10 mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8"
-        style={{
-          paddingTop: "max(1rem, env(safe-area-inset-top))",
-          paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-          paddingLeft: "max(1rem, env(safe-area-inset-left))",
-          paddingRight: "max(1rem, env(safe-area-inset-right))",
-        }}
-      >
-        <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] shadow-2xl backdrop-blur-xl">
-          <div className="relative">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-amber-300/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-pink-300/10 blur-3xl" />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent_45%,rgba(255,255,255,0.02))]" />
+    <div
+      className="relative z-10 mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8"
+      style={{
+        paddingTop: "max(1rem, env(safe-area-inset-top))",
+        paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+        paddingLeft: "max(1rem, env(safe-area-inset-left))",
+        paddingRight: "max(1rem, env(safe-area-inset-right))",
+      }}
+    >
+      <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] shadow-2xl backdrop-blur-xl">
+        <div className="relative">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-amber-200/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-orange-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent_45%,rgba(255,248,240,0.02))]" />
 
-            <div className="relative p-5 sm:p-8">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <span className="inline-flex items-center rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-medium text-amber-200">
-                    🐣 Zeiterfassung
-                  </span>
-                  <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                    Meine Arbeitszeiten
-                  </h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-                    Erstelle, bearbeite und reiche deine Zeiten im gleichen
-                    saisonalen Look wie Startseite und Login ein.
-                  </p>
-                </div>
-
-                <button
-                  onClick={openCreate}
-                  className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-5 py-3 font-semibold text-zinc-950 shadow-[0_10px_40px_rgba(251,191,36,0.22)] transition hover:scale-[1.02]"
-                  aria-label="Neuer Eintrag"
-                >
-                  + Neuer Eintrag
-                </button>
+          <div className="relative p-5 sm:p-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div>
+                <span className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-100/10 px-3 py-1 text-xs font-medium text-amber-100">
+                  Arbeitszeiten
+                </span>
+                <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                  Meine Arbeitszeiten
+                </h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
+                  Erstelle, bearbeite und reiche deine Zeiten in einem klaren,
+                  warmen Doppelweck-Stil ein.
+                </p>
               </div>
-  {false && (
+
+              <button
+                onClick={openCreate}
+                className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02]"
+                aria-label="Neuer Eintrag"
+              >
+                + Neuer Eintrag
+              </button>
+            </div>
+
+            {false && (
               <div className="mt-6 grid gap-4 md:grid-cols-2">
                 <ActionPanel
                   title="Monat einreichen"
@@ -280,7 +281,7 @@ export default function TimeEntriesClient() {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setSubmitMonth(e.target.value)
                         }
-                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                       />
                     </div>
                     <button
@@ -308,7 +309,7 @@ export default function TimeEntriesClient() {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           setSubmitDay(e.target.value)
                         }
-                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                       />
                     </div>
                     <button
@@ -321,361 +322,359 @@ export default function TimeEntriesClient() {
                   </div>
                 </ActionPanel>
               </div>
-)}
-              {loading && (
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
-                  Daten werden geladen…
-                </div>
-              )}
+            )}
 
-              {error && (
-                <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
-                  {error}
-                </div>
-              )}
+            {loading && (
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+                Daten werden geladen…
+              </div>
+            )}
 
-              {!loading && entries.length === 0 && (
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
-                  Noch keine Einträge. Lege deinen ersten an.
-                </div>
-              )}
+            {error && (
+              <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+                {error}
+              </div>
+            )}
 
-              {!loading && entries.length > 0 && (
-                <>
-                  {/* Mobile Cards */}
-                  <div className="mt-6 grid gap-3 md:hidden">
-                    {entries.map((e) => {
-                      const date = new Date(e.startUtc).toLocaleDateString();
-                      const start = new Date(e.startUtc).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      const end = new Date(e.endUtc).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      const status: Status = e.status ?? "DRAFT";
-                      const locked =
-                        status === "SUBMITTED" || status === "APPROVED";
+            {!loading && entries.length === 0 && (
+              <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+                Noch keine Einträge. Lege deinen ersten an.
+              </div>
+            )}
 
-                      return (
-                        <article
-                          key={e.id}
-                          className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <p className="text-sm font-semibold text-white">
-                                {date}
-                              </p>
-                              <p className="mt-1 text-xs text-zinc-400">
-                                {start} – {end}
-                              </p>
-                            </div>
-                            <StatusBadge status={status} />
+            {!loading && entries.length > 0 && (
+              <>
+                {/* Mobile Cards */}
+                <div className="mt-6 grid gap-3 md:hidden">
+                  {entries.map((e) => {
+                    const date = new Date(e.startUtc).toLocaleDateString();
+                    const start = new Date(e.startUtc).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const end = new Date(e.endUtc).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const status: Status = e.status ?? "DRAFT";
+                    const locked =
+                      status === "SUBMITTED" || status === "APPROVED";
+
+                    return (
+                      <article
+                        key={e.id}
+                        className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <p className="text-sm font-semibold text-white">
+                              {date}
+                            </p>
+                            <p className="mt-1 text-xs text-zinc-400">
+                              {start} – {end}
+                            </p>
                           </div>
+                          <StatusBadge status={status} />
+                        </div>
 
-                          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                            <InfoPair
-                              label="Dauer"
-                              value={minutesToHHMM(e.durationMin)}
-                            />
-                            <InfoPair label="Ort" value={e.location || "—"} />
-                            <InfoPair
-                              label="Kilometer"
-                              value={e.note || "—"}
-                              className="col-span-2"
-                            />
-                          </div>
+                        <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                          <InfoPair
+                            label="Dauer"
+                            value={minutesToHHMM(e.durationMin)}
+                          />
+                          <InfoPair label="Ort" value={e.location || "—"} />
+                          <InfoPair
+                            label="Kilometer"
+                            value={e.note || "—"}
+                            className="col-span-2"
+                          />
+                        </div>
 
-                          <div className="mt-4 flex flex-wrap gap-2">
-                            <button
-                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
-                              onClick={() => openEdit(e)}
-                              disabled={locked}
-                            >
-                              Bearbeiten
-                            </button>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          <button
+                            className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                            onClick={() => openEdit(e)}
+                            disabled={locked}
+                          >
+                            Bearbeiten
+                          </button>
 
-                            {locked ? (
-                              <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
-                                gesperrt
-                              </span>
-                            ) : confirmId === e.id ? (
-                              <>
-                                <button
-                                  className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                  onClick={() => handleDelete(e.id)}
-                                >
-                                  Löschen bestätigen
-                                </button>
-                                <button
-                                  className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
-                                  onClick={() => setConfirmId(null)}
-                                >
-                                  Abbrechen
-                                </button>
-                              </>
-                            ) : (
+                          {locked ? (
+                            <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+                              gesperrt
+                            </span>
+                          ) : confirmId === e.id ? (
+                            <>
                               <button
                                 className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                onClick={() => setConfirmId(e.id)}
+                                onClick={() => handleDelete(e.id)}
                               >
-                                Löschen
+                                Löschen bestätigen
                               </button>
-                            )}
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-
-                  {/* Desktop Table */}
-                  <div className="mt-6 hidden overflow-x-auto md:block">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
-                      <table className="min-w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-white/10 text-left text-zinc-400">
-                            <th className="px-4 py-3">Datum</th>
-                            <th className="px-4 py-3">Von</th>
-                            <th className="px-4 py-3">Bis</th>
-                            <th className="px-4 py-3">Dauer</th>
-                            <th className="px-4 py-3">Ort</th>
-                            <th className="px-4 py-3">Kilometer</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Aktionen</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entries.map((e) => {
-                            const date = new Date(
-                              e.startUtc
-                            ).toLocaleDateString();
-                            const start = new Date(
-                              e.startUtc
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            });
-                            const end = new Date(e.endUtc).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            );
-                            const status: Status = e.status ?? "DRAFT";
-                            const locked =
-                              status === "SUBMITTED" || status === "APPROVED";
-
-                            return (
-                              <tr
-                                key={e.id}
-                                className="border-b border-white/10 align-top last:border-b-0"
+                              <button
+                                className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                onClick={() => setConfirmId(null)}
                               >
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  {date}
-                                </td>
-                                <td className="px-4 py-3">{start}</td>
-                                <td className="px-4 py-3">{end}</td>
-                                <td className="px-4 py-3">
-                                  {minutesToHHMM(e.durationMin)}
-                                </td>
-                                <td
-                                  className="max-w-[12rem] truncate px-4 py-3"
-                                  title={e.location ?? ""}
-                                >
-                                  {e.location || "—"}
-                                </td>
-                                <td
-                                  className="max-w-[16rem] truncate px-4 py-3"
-                                  title={e.note ?? ""}
-                                >
-                                  {e.note || "—"}
-                                </td>
-                                <td className="px-4 py-3">
-                                  <StatusBadge status={status} />
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  <div className="flex flex-wrap gap-2">
-                                    <button
-                                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
-                                      onClick={() => openEdit(e)}
-                                      disabled={locked}
-                                    >
-                                      Bearbeiten
-                                    </button>
+                                Abbrechen
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                              onClick={() => setConfirmId(e.id)}
+                            >
+                              Löschen
+                            </button>
+                          )}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
 
-                                    {locked ? (
-                                      <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
-                                        gesperrt
-                                      </span>
-                                    ) : confirmId === e.id ? (
-                                      <>
-                                        <button
-                                          className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                          onClick={() => handleDelete(e.id)}
-                                        >
-                                          Bestätigen
-                                        </button>
-                                        <button
-                                          className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
-                                          onClick={() => setConfirmId(null)}
-                                        >
-                                          Abbrechen
-                                        </button>
-                                      </>
-                                    ) : (
+                {/* Desktop Table */}
+                <div className="mt-6 hidden overflow-x-auto md:block">
+                  <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-white/10 text-left text-zinc-400">
+                          <th className="px-4 py-3">Datum</th>
+                          <th className="px-4 py-3">Von</th>
+                          <th className="px-4 py-3">Bis</th>
+                          <th className="px-4 py-3">Dauer</th>
+                          <th className="px-4 py-3">Ort</th>
+                          <th className="px-4 py-3">Kilometer</th>
+                          <th className="px-4 py-3">Status</th>
+                          <th className="px-4 py-3">Aktionen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {entries.map((e) => {
+                          const date = new Date(
+                            e.startUtc
+                          ).toLocaleDateString();
+                          const start = new Date(
+                            e.startUtc
+                          ).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          });
+                          const end = new Date(e.endUtc).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          });
+                          const status: Status = e.status ?? "DRAFT";
+                          const locked =
+                            status === "SUBMITTED" || status === "APPROVED";
+
+                          return (
+                            <tr
+                              key={e.id}
+                              className="border-b border-white/10 align-top last:border-b-0"
+                            >
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                {date}
+                              </td>
+                              <td className="px-4 py-3">{start}</td>
+                              <td className="px-4 py-3">{end}</td>
+                              <td className="px-4 py-3">
+                                {minutesToHHMM(e.durationMin)}
+                              </td>
+                              <td
+                                className="max-w-[12rem] truncate px-4 py-3"
+                                title={e.location ?? ""}
+                              >
+                                {e.location || "—"}
+                              </td>
+                              <td
+                                className="max-w-[16rem] truncate px-4 py-3"
+                                title={e.note ?? ""}
+                              >
+                                {e.note || "—"}
+                              </td>
+                              <td className="px-4 py-3">
+                                <StatusBadge status={status} />
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex flex-wrap gap-2">
+                                  <button
+                                    className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                                    onClick={() => openEdit(e)}
+                                    disabled={locked}
+                                  >
+                                    Bearbeiten
+                                  </button>
+
+                                  {locked ? (
+                                    <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+                                      gesperrt
+                                    </span>
+                                  ) : confirmId === e.id ? (
+                                    <>
                                       <button
                                         className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                        onClick={() => setConfirmId(e.id)}
+                                        onClick={() => handleDelete(e.id)}
                                       >
-                                        Löschen
+                                        Bestätigen
                                       </button>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
+                                      <button
+                                        className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                        onClick={() => setConfirmId(null)}
+                                      >
+                                        Abbrechen
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <button
+                                      className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                      onClick={() => setConfirmId(e.id)}
+                                    >
+                                      Löschen
+                                    </button>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
-                </>
-              )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
+
+    {open && (
+      <div
+        className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+        role="dialog"
+        aria-modal="true"
+      >
+        <form
+          onSubmit={handleSave}
+          className="flex max-h-[92svh] w-full flex-col overflow-hidden rounded-t-[2rem] border border-white/10 bg-[#181310] shadow-2xl sm:max-w-xl sm:rounded-[2rem]"
+        >
+          <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,248,240,0.02))]" />
+            <div className="relative">
+              <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-100">
+                Zeiteintrag
+              </p>
+              <h3 className="mt-2 text-xl font-bold text-white">
+                {form.mode === "create"
+                  ? "Neuen Eintrag anlegen"
+                  : "Eintrag bearbeiten"}
+              </h3>
+              <p className="mt-1 text-sm text-zinc-400">
+                Klar gestaltet und auf Mobile kompakt bedienbar.
+              </p>
             </div>
           </div>
-        </section>
-      </div>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-          role="dialog"
-          aria-modal="true"
-        >
-          <form
-            onSubmit={handleSave}
-            className="flex max-h-[92svh] w-full flex-col overflow-hidden rounded-t-[2rem] border border-white/10 bg-[#111118] shadow-2xl sm:max-w-xl sm:rounded-[2rem]"
-          >
-            <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,255,255,0.02))]" />
-              <div className="relative">
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-200">
-                  🐣 Zeiteintrag
-                </p>
-                <h3 className="mt-2 text-xl font-bold text-white">
-                  {form.mode === "create"
-                    ? "Neuen Eintrag anlegen"
-                    : "Eintrag bearbeiten"}
-                </h3>
-                <p className="mt-1 text-sm text-zinc-400">
-                  Auf Mobile bewusst kompakt und gut bedienbar gestaltet.
-                </p>
-              </div>
-            </div>
+          <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+            <div className="space-y-4">
+              <FormField label="Datum" htmlFor="date">
+                <input
+                  id="date"
+                  type="date"
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                  value={form.date}
+                  onChange={(e) =>
+                    setForm({ ...form, date: e.target.value })
+                  }
+                  required
+                />
+              </FormField>
 
-            <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
-              <div className="space-y-4">
-                <FormField label="Datum" htmlFor="date">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <FormField label="Von" htmlFor="start">
                   <input
-                    id="date"
-                    type="date"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
-                    value={form.date}
+                    id="start"
+                    type="time"
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                    value={form.start}
                     onChange={(e) =>
-                      setForm({ ...form, date: e.target.value })
+                      setForm({ ...form, start: e.target.value })
                     }
                     required
                   />
                 </FormField>
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <FormField label="Von" htmlFor="start">
-                    <input
-                      id="start"
-                      type="time"
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
-                      value={form.start}
-                      onChange={(e) =>
-                        setForm({ ...form, start: e.target.value })
-                      }
-                      required
-                    />
-                  </FormField>
-
-                  <FormField label="Bis" htmlFor="end">
-                    <input
-                      id="end"
-                      type="time"
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
-                      value={form.end}
-                      onChange={(e) =>
-                        setForm({ ...form, end: e.target.value })
-                      }
-                      required
-                    />
-                  </FormField>
-                </div>
-
-                <div className="rounded-2xl border border-amber-300/15 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
-                  Dauer:{" "}
-                  <span className="font-semibold">
-                    {minutesToHHMM(durationMin)}
-                  </span>
-                </div>
-
-                <FormField label="Ort" htmlFor="location">
+                <FormField label="Bis" htmlFor="end">
                   <input
-                    id="location"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
-                    value={form.location}
+                    id="end"
+                    type="time"
+                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                    value={form.end}
                     onChange={(e) =>
-                      setForm({ ...form, location: e.target.value })
+                      setForm({ ...form, end: e.target.value })
                     }
-                    placeholder="z. B. Filiale oder Tour"
-                  />
-                </FormField>
-
-                <FormField label="Kilometer" htmlFor="note">
-                  <textarea
-                    id="note"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
-                    value={form.note}
-                    onChange={(e) =>
-                      setForm({ ...form, note: e.target.value })
-                    }
-                    rows={4}
-                    placeholder="z. B. gefahrene Kilometer"
+                    required
                   />
                 </FormField>
               </div>
-            </div>
 
-            <div className="sticky bottom-0 border-t border-white/10 bg-[#111118]/95 px-5 py-4 backdrop-blur sm:px-6">
-              <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-                <button
-                  type="button"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition hover:bg-white/10"
-                  onClick={() => setOpen(false)}
-                >
-                  Abbrechen
-                </button>
-                <button
-                  type="submit"
-                  disabled={busy}
-                  className="rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-5 py-3 font-semibold text-zinc-950 shadow-[0_10px_40px_rgba(251,191,36,0.22)] transition hover:scale-[1.02] disabled:opacity-70"
-                >
-                  {busy ? "Speichere…" : "Speichern"}
-                </button>
+              <div className="rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
+                Dauer:{" "}
+                <span className="font-semibold">
+                  {minutesToHHMM(durationMin)}
+                </span>
               </div>
+
+              <FormField label="Ort" htmlFor="location">
+                <input
+                  id="location"
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                  value={form.location}
+                  onChange={(e) =>
+                    setForm({ ...form, location: e.target.value })
+                  }
+                  placeholder="z. B. Filiale oder Tour"
+                />
+              </FormField>
+
+              <FormField label="Kilometer" htmlFor="note">
+                <textarea
+                  id="note"
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                  value={form.note}
+                  onChange={(e) =>
+                    setForm({ ...form, note: e.target.value })
+                  }
+                  rows={4}
+                  placeholder="z. B. gefahrene Kilometer"
+                />
+              </FormField>
             </div>
-          </form>
-        </div>
-      )}
-    </main>
-  );
+          </div>
+
+          <div className="sticky bottom-0 border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition hover:bg-white/10"
+                onClick={() => setOpen(false)}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                disabled={busy}
+                className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02] disabled:opacity-70"
+              >
+                {busy ? "Speichere…" : "Speichern"}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    )}
+  </main>
+);
 }
 
 function ActionPanel({
@@ -699,8 +698,8 @@ function ActionPanel({
 function StatusBadge({ status }: { status: Status }) {
   const map: Record<Status, string> = {
     DRAFT: "border-white/10 bg-white/5 text-zinc-300",
-    SUBMITTED: "border-amber-300/20 bg-amber-300/10 text-amber-200",
-    APPROVED: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
+    SUBMITTED: "border-amber-200/20 bg-amber-100/10 text-amber-100",
+    APPROVED: "border-orange-300/20 bg-orange-300/10 text-orange-200",
     REJECTED: "border-red-400/20 bg-red-400/10 text-red-200",
   };
 
@@ -753,3 +752,5 @@ function FormField({
     </div>
   );
 }
+
+  
