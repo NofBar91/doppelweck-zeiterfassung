@@ -549,208 +549,119 @@ export default function TimeEntriesClient() {
     </div>
 
     {open && (
-      <div
-        className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-        role="dialog"
-        aria-modal="true"
-      >
-        <form
-          onSubmit={handleSave}
-          className="flex max-h-[92svh] w-full flex-col overflow-hidden rounded-t-[2rem] border border-white/10 bg-[#181310] shadow-2xl sm:max-w-xl sm:rounded-[2rem]"
-        >
-          <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,248,240,0.02))]" />
-            <div className="relative">
-              <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-100">
-                Zeiteintrag
-              </p>
-              <h3 className="mt-2 text-xl font-bold text-white">
-                {form.mode === "create"
-                  ? "Neuen Eintrag anlegen"
-                  : "Eintrag bearbeiten"}
-              </h3>
-              <p className="mt-1 text-sm text-zinc-400">
-                Klar gestaltet und auf Mobile kompakt bedienbar.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
-            <div className="space-y-4">
-              <FormField label="Datum" htmlFor="date">
-                <input
-                  id="date"
-                  type="date"
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                  value={form.date}
-                  onChange={(e) =>
-                    setForm({ ...form, date: e.target.value })
-                  }
-                  required
-                />
-              </FormField>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <FormField label="Von" htmlFor="start">
-                  <input
-                    id="start"
-                    type="time"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                    value={form.start}
-                    onChange={(e) =>
-                      setForm({ ...form, start: e.target.value })
-                    }
-                    required
-                  />
-                </FormField>
-
-                <FormField label="Bis" htmlFor="end">
-                  <input
-                    id="end"
-                    type="time"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                    value={form.end}
-                    onChange={(e) =>
-                      setForm({ ...form, end: e.target.value })
-                    }
-                    required
-                  />
-                </FormField>
-              </div>
-
-              <div className="rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
-                Dauer:{" "}
-                <span className="font-semibold">
-                  {minutesToHHMM(durationMin)}
-                </span>
-              </div>
-
-              <FormField label="Ort" htmlFor="location">
-                <input
-                  id="location"
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                  value={form.location}
-                  onChange={(e) =>
-                    setForm({ ...form, location: e.target.value })
-                  }
-                  placeholder="z. B. Filiale oder Tour"
-                />
-              </FormField>
-
-              <FormField label="Kilometer" htmlFor="note">
-                <textarea
-                  id="note"
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                  value={form.note}
-                  onChange={(e) =>
-                    setForm({ ...form, note: e.target.value })
-                  }
-                  rows={4}
-                  placeholder="z. B. gefahrene Kilometer"
-                />
-              </FormField>
-            </div>
-          </div>
-
-          <div className="sticky bottom-0 border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition hover:bg-white/10"
-                onClick={() => setOpen(false)}
-              >
-                Abbrechen
-              </button>
-              <button
-                type="submit"
-                disabled={busy}
-                className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02] disabled:opacity-70"
-              >
-                {busy ? "Speichere…" : "Speichern"}
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    )}
-  </main>
-);
-}
-
-function ActionPanel({
-  title,
-  description,
-  children,
-}: {
-  title: string;
-  description: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm">
-      <h3 className="text-sm font-semibold text-white">{title}</h3>
-      <p className="mt-1 text-sm leading-6 text-zinc-400">{description}</p>
-      <div className="mt-4">{children}</div>
-    </div>
-  );
-}
-
-function StatusBadge({ status }: { status: Status }) {
-  const map: Record<Status, string> = {
-    DRAFT: "border-white/10 bg-white/5 text-zinc-300",
-    SUBMITTED: "border-amber-200/20 bg-amber-100/10 text-amber-100",
-    APPROVED: "border-orange-300/20 bg-orange-300/10 text-orange-200",
-    REJECTED: "border-red-400/20 bg-red-400/10 text-red-200",
-  };
-
-  return (
-    <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${map[status]}`}
+  <div
+    className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-6 backdrop-blur-sm sm:items-center sm:p-4"
+    role="dialog"
+    aria-modal="true"
+  >
+    <form
+      onSubmit={handleSave}
+      className="flex max-h-[92svh] w-full flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#181310] shadow-2xl sm:max-w-xl"
     >
-      {status}
-    </span>
-  );
-}
+      <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,248,240,0.02))]" />
+        <div className="relative">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-100">
+            Zeiteintrag
+          </p>
+          <h3 className="mt-2 text-xl font-bold text-white">
+            {form.mode === "create"
+              ? "Neuen Eintrag anlegen"
+              : "Eintrag bearbeiten"}
+          </h3>
+          <p className="mt-1 text-sm text-zinc-400">
+            Klar gestaltet und auf Mobile kompakt bedienbar.
+          </p>
+        </div>
+      </div>
 
-function InfoPair({
-  label,
-  value,
-  className = "",
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
-  return (
-    <div className={className}>
-      <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
-        {label}
-      </p>
-      <p className="mt-1 text-sm text-zinc-200">{value}</p>
-    </div>
-  );
-}
+      <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="space-y-4">
+          <FormField label="Datum" htmlFor="date">
+            <input
+              id="date"
+              type="date"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              value={form.date}
+              onChange={(e) => setForm({ ...form, date: e.target.value })}
+              required
+            />
+          </FormField>
 
-function FormField({
-  label,
-  htmlFor,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div>
-      <label
-        htmlFor={htmlFor}
-        className="mb-2 block text-sm font-medium text-zinc-300"
-      >
-        {label}
-      </label>
-      {children}
-    </div>
-  );
-}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Von" htmlFor="start">
+              <input
+                id="start"
+                type="time"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                value={form.start}
+                onChange={(e) => setForm({ ...form, start: e.target.value })}
+                required
+              />
+            </FormField>
+
+            <FormField label="Bis" htmlFor="end">
+              <input
+                id="end"
+                type="time"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                value={form.end}
+                onChange={(e) => setForm({ ...form, end: e.target.value })}
+                required
+              />
+            </FormField>
+          </div>
+
+          <div className="rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
+            Dauer:{" "}
+            <span className="font-semibold">
+              {minutesToHHMM(durationMin)}
+            </span>
+          </div>
+
+          <FormField label="Ort" htmlFor="location">
+            <input
+              id="location"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              value={form.location}
+              onChange={(e) => setForm({ ...form, location: e.target.value })}
+              placeholder="z. B. Filiale oder Tour"
+            />
+          </FormField>
+
+          <FormField label="Kilometer" htmlFor="note">
+            <textarea
+              id="note"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              value={form.note}
+              onChange={(e) => setForm({ ...form, note: e.target.value })}
+              rows={4}
+              placeholder="z. B. gefahrene Kilometer"
+            />
+          </FormField>
+        </div>
+      </div>
+
+      <div className="sticky bottom-0 border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition hover:bg-white/10"
+            onClick={() => setOpen(false)}
+          >
+            Abbrechen
+          </button>
+          <button
+            type="submit"
+            disabled={busy}
+            className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02] disabled:opacity-70"
+          >
+            {busy ? "Speichere…" : "Speichern"}
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+)}
 
   
