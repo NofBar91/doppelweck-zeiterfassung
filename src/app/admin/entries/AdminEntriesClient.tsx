@@ -391,7 +391,7 @@ export default function AdminEntriesClient() {
             onClick={exportCsv}
             className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 text-sm font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02]"
           >
-            CSV Export
+            Stundenübersicht generieren
           </button>
         </div>
       </section>
