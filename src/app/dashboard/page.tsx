@@ -61,9 +61,8 @@ export default async function DashboardPage() {
                     </Link>
                   </>
                 )}
-                <div className="[&>button]:rounded-2xl [&>button]:bg-gradient-to-r [&>button]:from-amber-200/90 [&>button]:via-orange-200/90 [&>button]:to-amber-100/90 [&>button]:px-4 [&>button]:py-2 [&>button]:font-semibold [&>button]:text-zinc-900 [&>button]:shadow-[0_10px_40px_rgba(217,119,6,0.20)] [&>button]:transition hover:[&>button]:scale-[1.02]">
                   <SignOutButton />
-                </div>
+
               </div>
             </div>
 
