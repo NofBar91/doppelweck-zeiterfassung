@@ -6,6 +6,8 @@ import {
   isoToLocalTimeInput,
 } from "@/lib/timezone";
 import { toCSV } from "@/lib/csv";
+import { getThemeClasses } from "@/lib/theme-classes";
+import { cn } from "@/lib/cn";
 
 type User = {
   id: string;
@@ -37,6 +39,8 @@ function errMsg(e: unknown) {
 }
 
 export default function AdminEntriesClient() {
+  const theme = getThemeClasses();
+
   const [users, setUsers] = React.useState<User[]>([]);
   const [loadingUsers, setLoadingUsers] = React.useState(true);
   const [usersError, setUsersError] = React.useState<string | null>(null);
@@ -259,7 +263,7 @@ export default function AdminEntriesClient() {
   return (
     <div className="space-y-5">
       {/* Filter */}
-      <section className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:p-5">
+      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold text-white">Filter</h2>
@@ -273,7 +277,11 @@ export default function AdminEntriesClient() {
           <FormField label="Mitarbeiter" htmlFor="filter-user">
             <select
               id="filter-user"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              className={cn(
+                "w-full rounded-2xl px-4 py-3",
+                theme.input.base,
+                theme.input.focus
+              )}
               value={filters.userId || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -296,7 +304,11 @@ export default function AdminEntriesClient() {
             <input
               id="filter-from"
               type="date"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              className={cn(
+                "w-full rounded-2xl px-4 py-3",
+                theme.input.base,
+                theme.input.focus
+              )}
               value={filters.from || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -311,7 +323,11 @@ export default function AdminEntriesClient() {
             <input
               id="filter-to"
               type="date"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              className={cn(
+                "w-full rounded-2xl px-4 py-3",
+                theme.input.base,
+                theme.input.focus
+              )}
               value={filters.to || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -326,7 +342,11 @@ export default function AdminEntriesClient() {
             <FormField label="Ort enthält" htmlFor="filter-location">
               <input
                 id="filter-location"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                className={cn(
+                  "w-full rounded-2xl px-4 py-3",
+                  theme.input.base,
+                  theme.input.focus
+                )}
                 placeholder="z. B. Büro"
                 value={filters.location || ""}
                 onChange={(e) =>
@@ -342,7 +362,11 @@ export default function AdminEntriesClient() {
           <FormField label="Status" htmlFor="filter-status">
             <select
               id="filter-status"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+              className={cn(
+                "w-full rounded-2xl px-4 py-3",
+                theme.input.base,
+                theme.input.focus
+              )}
               value={filters.status || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -368,7 +392,12 @@ export default function AdminEntriesClient() {
       </section>
 
       {/* Toolbar */}
-      <section className="flex flex-col gap-3 rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+      <section
+        className={cn(
+          "flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5",
+          theme.surface.softCard
+        )}
+      >
         <p className="text-sm text-zinc-300">
           Summe: <span className="font-semibold text-white">{total} h</span>{" "}
           <span className="text-zinc-500">({entries.length} Einträge)</span>
@@ -377,19 +406,28 @@ export default function AdminEntriesClient() {
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
           <button
             onClick={() => load()}
-            className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15"
+            className={cn(
+              "rounded-2xl px-4 py-3 text-sm font-medium transition",
+              theme.button.secondary
+            )}
           >
             Aktualisieren
           </button>
           <button
             onClick={() => setFilters({})}
-            className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15"
+            className={cn(
+              "rounded-2xl px-4 py-3 text-sm font-medium transition",
+              theme.button.secondary
+            )}
           >
             Zurücksetzen
           </button>
           <button
             onClick={exportCsv}
-            className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 text-sm font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02]"
+            className={cn(
+              "rounded-2xl px-4 py-3 text-sm font-semibold transition hover:scale-[1.02]",
+              theme.button.primary
+            )}
           >
             Stundenübersicht generieren
           </button>
@@ -397,7 +435,7 @@ export default function AdminEntriesClient() {
       </section>
 
       {loading && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+        <div className={cn("rounded-2xl px-4 py-4 text-sm text-zinc-300", theme.surface.softCard)}>
           Daten werden geladen…
         </div>
       )}
@@ -422,7 +460,7 @@ export default function AdminEntriesClient() {
             return (
               <article
                 key={e.id}
-                className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -461,7 +499,11 @@ export default function AdminEntriesClient() {
                         <input
                           id={`start-${e.id}`}
                           type="time"
-                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                          className={cn(
+                            "w-full rounded-xl px-3 py-2",
+                            theme.input.base,
+                            theme.input.focus
+                          )}
                           value={edit.start}
                           onChange={(ev) =>
                             setEdit((s) =>
@@ -475,7 +517,11 @@ export default function AdminEntriesClient() {
                         <input
                           id={`end-${e.id}`}
                           type="time"
-                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                          className={cn(
+                            "w-full rounded-xl px-3 py-2",
+                            theme.input.base,
+                            theme.input.focus
+                          )}
                           value={edit.end}
                           onChange={(ev) =>
                             setEdit((s) =>
@@ -489,7 +535,11 @@ export default function AdminEntriesClient() {
                     <FormField label="Ort" htmlFor={`location-${e.id}`}>
                       <input
                         id={`location-${e.id}`}
-                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                        className={cn(
+                          "w-full rounded-xl px-3 py-2",
+                          theme.input.base,
+                          theme.input.focus
+                        )}
                         value={edit.location}
                         onChange={(ev) =>
                           setEdit((s) =>
@@ -502,7 +552,11 @@ export default function AdminEntriesClient() {
                     <FormField label="Kilometer" htmlFor={`note-${e.id}`}>
                       <input
                         id={`note-${e.id}`}
-                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                        className={cn(
+                          "w-full rounded-xl px-3 py-2",
+                          theme.input.base,
+                          theme.input.focus
+                        )}
                         value={edit.note}
                         onChange={(ev) =>
                           setEdit((s) =>
@@ -514,13 +568,19 @@ export default function AdminEntriesClient() {
 
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className="rounded-xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-2 text-sm font-semibold text-zinc-900"
+                        className={cn(
+                          "rounded-xl px-4 py-2 text-sm font-semibold",
+                          theme.button.primary
+                        )}
                         onClick={() => saveEdit(e.id)}
                       >
                         Speichern
                       </button>
                       <button
-                        className="rounded-xl border border-white/10 bg-white/10 px-4 py-2 text-sm text-white"
+                        className={cn(
+                          "rounded-xl px-4 py-2 text-sm",
+                          theme.button.secondary
+                        )}
                         onClick={cancelEdit}
                       >
                         Abbrechen
@@ -530,7 +590,10 @@ export default function AdminEntriesClient() {
                 ) : (
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
-                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                      className={cn(
+                        "rounded-xl px-3 py-2 text-sm disabled:opacity-40",
+                        theme.button.secondary
+                      )}
                       onClick={() => startEdit(e)}
                       disabled={!editable}
                       title={
@@ -544,7 +607,10 @@ export default function AdminEntriesClient() {
 
                     {e.status !== "APPROVED" && (
                       <button
-                        className="rounded-xl border border-orange-300/20 bg-orange-300/10 px-3 py-2 text-sm text-orange-200"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.success
+                        )}
                         onClick={() => setStatus(e.id, "APPROVED")}
                       >
                         Freigeben
@@ -553,7 +619,10 @@ export default function AdminEntriesClient() {
 
                     {e.status !== "REJECTED" && (
                       <button
-                        className="rounded-xl border border-amber-200/20 bg-amber-100/10 px-3 py-2 text-sm text-amber-100"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.warning
+                        )}
                         onClick={() => setStatus(e.id, "REJECTED")}
                       >
                         Ablehnen
@@ -563,13 +632,19 @@ export default function AdminEntriesClient() {
                     {confirmId === e.id ? (
                       <>
                         <button
-                          className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-sm",
+                            theme.button.danger
+                          )}
                           onClick={() => handleDelete(e.id)}
                         >
                           Löschen bestätigen
                         </button>
                         <button
-                          className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-sm",
+                            theme.button.secondary
+                          )}
                           onClick={() => setConfirmId(null)}
                         >
                           Abbrechen
@@ -577,7 +652,10 @@ export default function AdminEntriesClient() {
                       </>
                     ) : (
                       <button
-                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.danger
+                        )}
                         onClick={() => setConfirmId(e.id)}
                       >
                         Löschen
@@ -594,7 +672,7 @@ export default function AdminEntriesClient() {
       {/* Desktop Table */}
       {!loading && entries.length > 0 && (
         <div className="hidden overflow-x-auto xl:block">
-          <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+          <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-white/10 text-left text-zinc-400">
@@ -633,7 +711,11 @@ export default function AdminEntriesClient() {
                           <input
                             aria-label="Von"
                             type="time"
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                            className={cn(
+                              "rounded-xl px-3 py-2",
+                              theme.input.base,
+                              theme.input.focus
+                            )}
                             value={edit?.start || start}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -650,7 +732,11 @@ export default function AdminEntriesClient() {
                           <input
                             aria-label="Bis"
                             type="time"
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                            className={cn(
+                              "rounded-xl px-3 py-2",
+                              theme.input.base,
+                              theme.input.focus
+                            )}
                             value={edit?.end || end}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -667,7 +753,11 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <input
                             aria-label="Ort"
-                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                            className={cn(
+                              "w-full rounded-xl px-3 py-2",
+                              theme.input.base,
+                              theme.input.focus
+                            )}
                             value={edit?.location || ""}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -688,7 +778,11 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <input
                             aria-label="Kilometer"
-                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                            className={cn(
+                              "w-full rounded-xl px-3 py-2",
+                              theme.input.base,
+                              theme.input.focus
+                            )}
                             value={edit?.note || ""}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -715,13 +809,19 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <div className="flex flex-wrap gap-2">
                             <button
-                              className="rounded-xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-3 py-2 text-sm font-semibold text-zinc-900"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm font-semibold",
+                                theme.button.primary
+                              )}
                               onClick={() => saveEdit(e.id)}
                             >
                               Speichern
                             </button>
                             <button
-                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm",
+                                theme.button.secondary
+                              )}
                               onClick={cancelEdit}
                             >
                               Abbrechen
@@ -730,7 +830,10 @@ export default function AdminEntriesClient() {
                         ) : (
                           <div className="flex flex-wrap gap-2">
                             <button
-                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm disabled:opacity-40",
+                                theme.button.secondary
+                              )}
                               onClick={() => startEdit(e)}
                               disabled={!editable}
                               title={
@@ -744,7 +847,10 @@ export default function AdminEntriesClient() {
 
                             {e.status !== "APPROVED" && (
                               <button
-                                className="rounded-xl border border-orange-300/20 bg-orange-300/10 px-3 py-2 text-sm text-orange-200"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.success
+                                )}
                                 onClick={() => setStatus(e.id, "APPROVED")}
                               >
                                 Freigeben
@@ -753,7 +859,10 @@ export default function AdminEntriesClient() {
 
                             {e.status !== "REJECTED" && (
                               <button
-                                className="rounded-xl border border-amber-200/20 bg-amber-100/10 px-3 py-2 text-sm text-amber-100"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.warning
+                                )}
                                 onClick={() => setStatus(e.id, "REJECTED")}
                               >
                                 Ablehnen
@@ -763,13 +872,19 @@ export default function AdminEntriesClient() {
                             {confirmId === e.id ? (
                               <>
                                 <button
-                                  className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                  className={cn(
+                                    "rounded-xl px-3 py-2 text-sm",
+                                    theme.button.danger
+                                  )}
                                   onClick={() => handleDelete(e.id)}
                                 >
                                   Bestätigen
                                 </button>
                                 <button
-                                  className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                  className={cn(
+                                    "rounded-xl px-3 py-2 text-sm",
+                                    theme.button.secondary
+                                  )}
                                   onClick={() => setConfirmId(null)}
                                 >
                                   Abbrechen
@@ -777,7 +892,10 @@ export default function AdminEntriesClient() {
                               </>
                             ) : (
                               <button
-                                className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.danger
+                                )}
                                 onClick={() => setConfirmId(e.id)}
                               >
                                 Löschen
@@ -796,7 +914,7 @@ export default function AdminEntriesClient() {
       )}
 
       {!loading && entries.length === 0 && (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+        <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
           Keine Einträge für die aktuellen Filter.
         </div>
       )}
@@ -831,16 +949,21 @@ function StatusBadge({
 }: {
   status: "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
 }) {
+  const theme = getThemeClasses();
+
   const map = {
-    DRAFT: "border-white/10 bg-white/5 text-zinc-300",
-    SUBMITTED: "border-amber-200/20 bg-amber-100/10 text-amber-100",
-    APPROVED: "border-orange-300/20 bg-orange-300/10 text-orange-200",
-    REJECTED: "border-red-400/20 bg-red-400/10 text-red-200",
+    DRAFT: theme.status.draft,
+    SUBMITTED: theme.status.submitted,
+    APPROVED: theme.status.approved,
+    REJECTED: theme.status.rejected,
   };
 
   return (
     <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${map[status]}`}
+      className={cn(
+        "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
+        map[status]
+      )}
     >
       {status}
     </span>
