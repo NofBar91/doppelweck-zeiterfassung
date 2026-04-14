@@ -266,7 +266,7 @@ export default function UsersClient() {
             <FormField label="Name" htmlFor="direct-name">
               <input
                 id="direct-name"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 value={directName}
                 onChange={(e) => setDirectName(e.target.value)}
                 placeholder="Max Mustermann"
@@ -278,7 +278,7 @@ export default function UsersClient() {
             <FormField label="E-Mail" htmlFor="direct-email">
               <input
                 id="direct-email"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 type="email"
                 value={directEmail}
                 onChange={(e) => setDirectEmail(e.target.value)}
@@ -292,7 +292,7 @@ export default function UsersClient() {
             <FormField label="Rolle" htmlFor="direct-role">
               <select
                 id="direct-role"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 value={directRole}
                 onChange={(e) => setDirectRole(e.target.value as Role)}
               >
@@ -309,7 +309,7 @@ export default function UsersClient() {
             >
               <input
                 id="direct-password"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 type="password"
                 value={directPassword}
                 onChange={(e) => setDirectPassword(e.target.value)}
@@ -323,7 +323,7 @@ export default function UsersClient() {
           <div className="md:col-span-3 flex items-end">
             <button
               disabled={busyCreate}
-              className="w-full rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-3 font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(251,191,36,0.18)] transition hover:scale-[1.02] disabled:opacity-70 md:w-auto"
+              className="w-full rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02] disabled:opacity-70 md:w-auto"
             >
               {busyCreate ? "Lege an…" : "Direkt anlegen"}
             </button>
@@ -366,7 +366,7 @@ export default function UsersClient() {
             <FormField label="E-Mail" htmlFor="invite-email">
               <input
                 id="invite-email"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
@@ -380,7 +380,7 @@ export default function UsersClient() {
             <FormField label="Rolle" htmlFor="invite-role">
               <select
                 id="invite-role"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as Role)}
               >
@@ -392,14 +392,14 @@ export default function UsersClient() {
 
           <button
             disabled={busyInvite}
-            className="rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-3 font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(251,191,36,0.18)] transition hover:scale-[1.02] disabled:opacity-70"
+            className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02] disabled:opacity-70"
           >
             {busyInvite ? "Sende…" : "Einladung senden"}
           </button>
         </form>
 
         {inviteLink && (
-          <div className="mt-4 rounded-2xl border border-amber-300/15 bg-amber-300/10 px-4 py-3 text-sm text-amber-100">
+          <div className="mt-4 rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
             <p className="break-all">{inviteLink}</p>
             <button
               className="mt-2 rounded-xl border border-amber-200/20 bg-amber-200/10 px-3 py-2 text-sm text-amber-50"
@@ -569,7 +569,7 @@ export default function UsersClient() {
                     <FormField label="Rolle" htmlFor={`role-mobile-${u.id}`}>
                       <select
                         id={`role-mobile-${u.id}`}
-                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                        className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                         value={u.role}
                         onChange={(e) => updateRole(u.id, e.target.value as Role)}
                       >
@@ -622,7 +622,7 @@ export default function UsersClient() {
                         <td className="px-4 py-3">{u.email}</td>
                         <td className="px-4 py-3">
                           <select
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                             value={u.role}
                             onChange={(e) =>
                               updateRole(u.id, e.target.value as Role)
