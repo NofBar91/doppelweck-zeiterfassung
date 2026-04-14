@@ -219,177 +219,252 @@ export default function TimeEntriesClient() {
   }
 
   return (
-    <main className="relative min-h-[100svh] overflow-hidden bg-[#14110f] text-zinc-100">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,222,179,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(120,72,32,0.14),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(217,119,6,0.12),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.04] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:34px_34px]" />
+    <>
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <span className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-100/10 px-3 py-1 text-xs font-medium text-amber-100">
+            Arbeitszeiten
+          </span>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+            Meine Arbeitszeiten
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
+            Erstelle, bearbeite und reiche deine Zeiten in einem klaren, warmen
+            Doppelweck-Stil ein.
+          </p>
+        </div>
+
+        <button
+          onClick={openCreate}
+          className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02]"
+          aria-label="Neuer Eintrag"
+        >
+          + Neuer Eintrag
+        </button>
       </div>
 
-      <div
-        className="relative z-10 mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8"
-        style={{
-          paddingTop: "max(1rem, env(safe-area-inset-top))",
-          paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-          paddingLeft: "max(1rem, env(safe-area-inset-left))",
-          paddingRight: "max(1rem, env(safe-area-inset-right))",
-        }}
-      >
-        <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.06] shadow-2xl backdrop-blur-xl">
-          <div className="relative">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-amber-200/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-orange-400/10 blur-3xl" />
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),transparent_45%,rgba(255,248,240,0.02))]" />
-
-            <div className="relative p-5 sm:p-8">
-              <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <span className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-100/10 px-3 py-1 text-xs font-medium text-amber-100">
-                    Arbeitszeiten
-                  </span>
-                  <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                    Meine Arbeitszeiten
-                  </h2>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-                    Erstelle, bearbeite und reiche deine Zeiten in einem klaren,
-                    warmen Doppelweck-Stil ein.
-                  </p>
-                </div>
-
-                <button
-                  onClick={openCreate}
-                  className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02]"
-                  aria-label="Neuer Eintrag"
-                >
-                  + Neuer Eintrag
-                </button>
+      {false && (
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <ActionPanel
+            title="Monat einreichen"
+            description="Alle DRAFT- oder REJECTED-Einträge für einen Monat gesammelt absenden."
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                  Monat
+                </label>
+                <input
+                  type="month"
+                  value={submitMonth}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSubmitMonth(e.target.value)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                />
               </div>
+              <button
+                onClick={submitCurrentMonth}
+                disabled={submitting}
+                className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
+              >
+                {submitting ? "Reiche ein…" : "Monat einreichen"}
+              </button>
+            </div>
+          </ActionPanel>
 
-              {false && (
-                <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  <ActionPanel
-                    title="Monat einreichen"
-                    description="Alle DRAFT- oder REJECTED-Einträge für einen Monat gesammelt absenden."
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                      <div className="flex-1">
-                        <label className="mb-2 block text-sm font-medium text-zinc-300">
-                          Monat
-                        </label>
-                        <input
-                          type="month"
-                          value={submitMonth}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setSubmitMonth(e.target.value)
-                          }
-                          className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                        />
-                      </div>
-                      <button
-                        onClick={submitCurrentMonth}
-                        disabled={submitting}
-                        className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
-                      >
-                        {submitting ? "Reiche ein…" : "Monat einreichen"}
-                      </button>
+          <ActionPanel
+            title="Tag einreichen"
+            description="Alle offenen Einträge für ein bestimmtes Datum gesammelt absenden."
+          >
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+              <div className="flex-1">
+                <label className="mb-2 block text-sm font-medium text-zinc-300">
+                  Datum
+                </label>
+                <input
+                  type="date"
+                  value={submitDay}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSubmitDay(e.target.value)
+                  }
+                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                />
+              </div>
+              <button
+                onClick={submitSingleDay}
+                disabled={submittingDay}
+                className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
+              >
+                {submittingDay ? "Reiche ein…" : "Tag einreichen"}
+              </button>
+            </div>
+          </ActionPanel>
+        </div>
+      )}
+
+      {loading && (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+          Daten werden geladen…
+        </div>
+      )}
+
+      {error && (
+        <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+          {error}
+        </div>
+      )}
+
+      {!loading && entries.length === 0 && (
+        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+          Noch keine Einträge. Lege deinen ersten an.
+        </div>
+      )}
+
+      {!loading && entries.length > 0 && (
+        <>
+          <div className="mt-6 grid gap-3 md:hidden">
+            {entries.map((e) => {
+              const date = new Date(e.startUtc).toLocaleDateString();
+              const start = new Date(e.startUtc).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              const end = new Date(e.endUtc).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              const status: Status = e.status ?? "DRAFT";
+              const locked = status === "SUBMITTED" || status === "APPROVED";
+
+              return (
+                <article
+                  key={e.id}
+                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold text-white">{date}</p>
+                      <p className="mt-1 text-xs text-zinc-400">
+                        {start} – {end}
+                      </p>
                     </div>
-                  </ActionPanel>
+                    <StatusBadge status={status} />
+                  </div>
 
-                  <ActionPanel
-                    title="Tag einreichen"
-                    description="Alle offenen Einträge für ein bestimmtes Datum gesammelt absenden."
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-                      <div className="flex-1">
-                        <label className="mb-2 block text-sm font-medium text-zinc-300">
-                          Datum
-                        </label>
-                        <input
-                          type="date"
-                          value={submitDay}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                            setSubmitDay(e.target.value)
-                          }
-                          className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
-                        />
-                      </div>
-                      <button
-                        onClick={submitSingleDay}
-                        disabled={submittingDay}
-                        className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
-                      >
-                        {submittingDay ? "Reiche ein…" : "Tag einreichen"}
-                      </button>
-                    </div>
-                  </ActionPanel>
-                </div>
-              )}
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <InfoPair
+                      label="Dauer"
+                      value={minutesToHHMM(e.durationMin)}
+                    />
+                    <InfoPair label="Ort" value={e.location || "—"} />
+                    <InfoPair
+                      label="Kilometer"
+                      value={e.note || "—"}
+                      className="col-span-2"
+                    />
+                  </div>
 
-              {loading && (
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
-                  Daten werden geladen…
-                </div>
-              )}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <button
+                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                      onClick={() => openEdit(e)}
+                      disabled={locked}
+                    >
+                      Bearbeiten
+                    </button>
 
-              {error && (
-                <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
-                  {error}
-                </div>
-              )}
-
-              {!loading && entries.length === 0 && (
-                <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
-                  Noch keine Einträge. Lege deinen ersten an.
-                </div>
-              )}
-
-              {!loading && entries.length > 0 && (
-                <>
-                  <div className="mt-6 grid gap-3 md:hidden">
-                    {entries.map((e) => {
-                      const date = new Date(e.startUtc).toLocaleDateString();
-                      const start = new Date(e.startUtc).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      const end = new Date(e.endUtc).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      });
-                      const status: Status = e.status ?? "DRAFT";
-                      const locked =
-                        status === "SUBMITTED" || status === "APPROVED";
-
-                      return (
-                        <article
-                          key={e.id}
-                          className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                    {locked ? (
+                      <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+                        gesperrt
+                      </span>
+                    ) : confirmId === e.id ? (
+                      <>
+                        <button
+                          className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                          onClick={() => handleDelete(e.id)}
                         >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <p className="text-sm font-semibold text-white">
-                                {date}
-                              </p>
-                              <p className="mt-1 text-xs text-zinc-400">
-                                {start} – {end}
-                              </p>
-                            </div>
-                            <StatusBadge status={status} />
-                          </div>
+                          Löschen bestätigen
+                        </button>
+                        <button
+                          className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                          onClick={() => setConfirmId(null)}
+                        >
+                          Abbrechen
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                        onClick={() => setConfirmId(e.id)}
+                      >
+                        Löschen
+                      </button>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
 
-                          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                            <InfoPair
-                              label="Dauer"
-                              value={minutesToHHMM(e.durationMin)}
-                            />
-                            <InfoPair label="Ort" value={e.location || "—"} />
-                            <InfoPair
-                              label="Kilometer"
-                              value={e.note || "—"}
-                              className="col-span-2"
-                            />
-                          </div>
+          <div className="mt-6 hidden overflow-x-auto md:block">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="border-b border-white/10 text-left text-zinc-400">
+                    <th className="px-4 py-3">Datum</th>
+                    <th className="px-4 py-3">Von</th>
+                    <th className="px-4 py-3">Bis</th>
+                    <th className="px-4 py-3">Dauer</th>
+                    <th className="px-4 py-3">Ort</th>
+                    <th className="px-4 py-3">Kilometer</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Aktionen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {entries.map((e) => {
+                    const date = new Date(e.startUtc).toLocaleDateString();
+                    const start = new Date(e.startUtc).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const end = new Date(e.endUtc).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    });
+                    const status: Status = e.status ?? "DRAFT";
+                    const locked =
+                      status === "SUBMITTED" || status === "APPROVED";
 
-                          <div className="mt-4 flex flex-wrap gap-2">
+                    return (
+                      <tr
+                        key={e.id}
+                        className="border-b border-white/10 align-top last:border-b-0"
+                      >
+                        <td className="px-4 py-3 whitespace-nowrap">{date}</td>
+                        <td className="px-4 py-3">{start}</td>
+                        <td className="px-4 py-3">{end}</td>
+                        <td className="px-4 py-3">
+                          {minutesToHHMM(e.durationMin)}
+                        </td>
+                        <td
+                          className="max-w-[12rem] truncate px-4 py-3"
+                          title={e.location ?? ""}
+                        >
+                          {e.location || "—"}
+                        </td>
+                        <td
+                          className="max-w-[16rem] truncate px-4 py-3"
+                          title={e.note ?? ""}
+                        >
+                          {e.note || "—"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={status} />
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex flex-wrap gap-2">
                             <button
                               className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
                               onClick={() => openEdit(e)}
@@ -408,7 +483,7 @@ export default function TimeEntriesClient() {
                                   className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
                                   onClick={() => handleDelete(e.id)}
                                 >
-                                  Löschen bestätigen
+                                  Bestätigen
                                 </button>
                                 <button
                                   className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
@@ -426,128 +501,16 @@ export default function TimeEntriesClient() {
                               </button>
                             )}
                           </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-
-                  <div className="mt-6 hidden overflow-x-auto md:block">
-                    <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
-                      <table className="min-w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-white/10 text-left text-zinc-400">
-                            <th className="px-4 py-3">Datum</th>
-                            <th className="px-4 py-3">Von</th>
-                            <th className="px-4 py-3">Bis</th>
-                            <th className="px-4 py-3">Dauer</th>
-                            <th className="px-4 py-3">Ort</th>
-                            <th className="px-4 py-3">Kilometer</th>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Aktionen</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {entries.map((e) => {
-                            const date = new Date(
-                              e.startUtc
-                            ).toLocaleDateString();
-                            const start = new Date(
-                              e.startUtc
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            });
-                            const end = new Date(e.endUtc).toLocaleTimeString(
-                              [],
-                              {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            );
-                            const status: Status = e.status ?? "DRAFT";
-                            const locked =
-                              status === "SUBMITTED" || status === "APPROVED";
-
-                            return (
-                              <tr
-                                key={e.id}
-                                className="border-b border-white/10 align-top last:border-b-0"
-                              >
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  {date}
-                                </td>
-                                <td className="px-4 py-3">{start}</td>
-                                <td className="px-4 py-3">{end}</td>
-                                <td className="px-4 py-3">
-                                  {minutesToHHMM(e.durationMin)}
-                                </td>
-                                <td
-                                  className="max-w-[12rem] truncate px-4 py-3"
-                                  title={e.location ?? ""}
-                                >
-                                  {e.location || "—"}
-                                </td>
-                                <td
-                                  className="max-w-[16rem] truncate px-4 py-3"
-                                  title={e.note ?? ""}
-                                >
-                                  {e.note || "—"}
-                                </td>
-                                <td className="px-4 py-3">
-                                  <StatusBadge status={status} />
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  <div className="flex flex-wrap gap-2">
-                                    <button
-                                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
-                                      onClick={() => openEdit(e)}
-                                      disabled={locked}
-                                    >
-                                      Bearbeiten
-                                    </button>
-
-                                    {locked ? (
-                                      <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
-                                        gesperrt
-                                      </span>
-                                    ) : confirmId === e.id ? (
-                                      <>
-                                        <button
-                                          className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                          onClick={() => handleDelete(e.id)}
-                                        >
-                                          Bestätigen
-                                        </button>
-                                        <button
-                                          className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
-                                          onClick={() => setConfirmId(null)}
-                                        >
-                                          Abbrechen
-                                        </button>
-                                      </>
-                                    ) : (
-                                      <button
-                                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
-                                        onClick={() => setConfirmId(e.id)}
-                                      >
-                                        Löschen
-                                      </button>
-                                    )}
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
-              )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
-        </section>
-      </div>
+        </>
+      )}
 
       {open && (
         <div
@@ -674,7 +637,7 @@ export default function TimeEntriesClient() {
           </form>
         </div>
       )}
-    </main>
+    </>
   );
 }
 
