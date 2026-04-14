@@ -273,7 +273,7 @@ export default function AdminEntriesClient() {
           <FormField label="Mitarbeiter" htmlFor="filter-user">
             <select
               id="filter-user"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
               value={filters.userId || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -296,7 +296,7 @@ export default function AdminEntriesClient() {
             <input
               id="filter-from"
               type="date"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
               value={filters.from || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -311,7 +311,7 @@ export default function AdminEntriesClient() {
             <input
               id="filter-to"
               type="date"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
               value={filters.to || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -326,7 +326,7 @@ export default function AdminEntriesClient() {
             <FormField label="Ort enthält" htmlFor="filter-location">
               <input
                 id="filter-location"
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                 placeholder="z. B. Büro"
                 value={filters.location || ""}
                 onChange={(e) =>
@@ -342,7 +342,7 @@ export default function AdminEntriesClient() {
           <FormField label="Status" htmlFor="filter-status">
             <select
               id="filter-status"
-              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-200/10"
+              className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
               value={filters.status || ""}
               onChange={(e) =>
                 setFilters((f) => ({
@@ -389,7 +389,7 @@ export default function AdminEntriesClient() {
           </button>
           <button
             onClick={exportCsv}
-            className="rounded-2xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-3 text-sm font-semibold text-zinc-950 shadow-[0_10px_30px_rgba(251,191,36,0.18)] transition hover:scale-[1.02]"
+            className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-3 text-sm font-semibold text-zinc-900 shadow-[0_10px_30px_rgba(217,119,6,0.18)] transition hover:scale-[1.02]"
           >
             CSV Export
           </button>
@@ -461,7 +461,7 @@ export default function AdminEntriesClient() {
                         <input
                           id={`start-${e.id}`}
                           type="time"
-                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                           value={edit.start}
                           onChange={(ev) =>
                             setEdit((s) =>
@@ -475,7 +475,7 @@ export default function AdminEntriesClient() {
                         <input
                           id={`end-${e.id}`}
                           type="time"
-                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                          className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                           value={edit.end}
                           onChange={(ev) =>
                             setEdit((s) =>
@@ -489,7 +489,7 @@ export default function AdminEntriesClient() {
                     <FormField label="Ort" htmlFor={`location-${e.id}`}>
                       <input
                         id={`location-${e.id}`}
-                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                         value={edit.location}
                         onChange={(ev) =>
                           setEdit((s) =>
@@ -502,7 +502,7 @@ export default function AdminEntriesClient() {
                     <FormField label="Kilometer" htmlFor={`note-${e.id}`}>
                       <input
                         id={`note-${e.id}`}
-                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                        className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                         value={edit.note}
                         onChange={(ev) =>
                           setEdit((s) =>
@@ -514,7 +514,7 @@ export default function AdminEntriesClient() {
 
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className="rounded-xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-4 py-2 text-sm font-semibold text-zinc-950"
+                        className="rounded-xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-4 py-2 text-sm font-semibold text-zinc-900"
                         onClick={() => saveEdit(e.id)}
                       >
                         Speichern
@@ -544,7 +544,7 @@ export default function AdminEntriesClient() {
 
                     {e.status !== "APPROVED" && (
                       <button
-                        className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-200"
+                        className="rounded-xl border border-orange-300/20 bg-orange-300/10 px-3 py-2 text-sm text-orange-200"
                         onClick={() => setStatus(e.id, "APPROVED")}
                       >
                         Freigeben
@@ -553,7 +553,7 @@ export default function AdminEntriesClient() {
 
                     {e.status !== "REJECTED" && (
                       <button
-                        className="rounded-xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-sm text-amber-200"
+                        className="rounded-xl border border-amber-200/20 bg-amber-100/10 px-3 py-2 text-sm text-amber-100"
                         onClick={() => setStatus(e.id, "REJECTED")}
                       >
                         Ablehnen
@@ -593,7 +593,7 @@ export default function AdminEntriesClient() {
 
       {/* Desktop Table */}
       {!loading && entries.length > 0 && (
-        <div className="hidden xl:block overflow-x-auto">
+        <div className="hidden overflow-x-auto xl:block">
           <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.04] backdrop-blur-sm">
             <table className="min-w-full text-sm">
               <thead>
@@ -633,7 +633,7 @@ export default function AdminEntriesClient() {
                           <input
                             aria-label="Von"
                             type="time"
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                             value={edit?.start || start}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -650,7 +650,7 @@ export default function AdminEntriesClient() {
                           <input
                             aria-label="Bis"
                             type="time"
-                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                            className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                             value={edit?.end || end}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -667,7 +667,7 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <input
                             aria-label="Ort"
-                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                             value={edit?.location || ""}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -688,7 +688,7 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <input
                             aria-label="Kilometer"
-                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none"
+                            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
                             value={edit?.note || ""}
                             onChange={(ev) =>
                               setEdit((s) =>
@@ -715,7 +715,7 @@ export default function AdminEntriesClient() {
                         {isEditing ? (
                           <div className="flex flex-wrap gap-2">
                             <button
-                              className="rounded-xl bg-gradient-to-r from-amber-300/90 via-amber-200/90 to-pink-200/90 px-3 py-2 text-sm font-semibold text-zinc-950"
+                              className="rounded-xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-3 py-2 text-sm font-semibold text-zinc-900"
                               onClick={() => saveEdit(e.id)}
                             >
                               Speichern
@@ -744,7 +744,7 @@ export default function AdminEntriesClient() {
 
                             {e.status !== "APPROVED" && (
                               <button
-                                className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-3 py-2 text-sm text-emerald-200"
+                                className="rounded-xl border border-orange-300/20 bg-orange-300/10 px-3 py-2 text-sm text-orange-200"
                                 onClick={() => setStatus(e.id, "APPROVED")}
                               >
                                 Freigeben
@@ -753,7 +753,7 @@ export default function AdminEntriesClient() {
 
                             {e.status !== "REJECTED" && (
                               <button
-                                className="rounded-xl border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-sm text-amber-200"
+                                className="rounded-xl border border-amber-200/20 bg-amber-100/10 px-3 py-2 text-sm text-amber-100"
                                 onClick={() => setStatus(e.id, "REJECTED")}
                               >
                                 Ablehnen
@@ -833,8 +833,8 @@ function StatusBadge({
 }) {
   const map = {
     DRAFT: "border-white/10 bg-white/5 text-zinc-300",
-    SUBMITTED: "border-amber-300/20 bg-amber-300/10 text-amber-200",
-    APPROVED: "border-emerald-300/20 bg-emerald-300/10 text-emerald-200",
+    SUBMITTED: "border-amber-200/20 bg-amber-100/10 text-amber-100",
+    APPROVED: "border-orange-300/20 bg-orange-300/10 text-orange-200",
     REJECTED: "border-red-400/20 bg-red-400/10 text-red-200",
   };
 
