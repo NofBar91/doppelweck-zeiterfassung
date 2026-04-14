@@ -7,6 +7,8 @@ import {
   isoToLocalDateInput,
   isoToLocalTimeInput,
 } from "@/lib/timezone";
+import { getThemeClasses } from "@/lib/theme-classes";
+import { cn } from "@/lib/cn";
 
 type Role = "ADMIN" | "EMPLOYEE";
 type Status = "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
@@ -81,6 +83,7 @@ function defaultForm(): FormState {
 }
 
 export default function TimeEntriesClient() {
+  const theme = getThemeClasses();
   const { entries, setEntries, loading, error, reload } = useEntries();
   const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState<FormState>(defaultForm());
@@ -222,21 +225,29 @@ export default function TimeEntriesClient() {
     <>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <span className="inline-flex items-center rounded-full border border-amber-200/20 bg-amber-100/10 px-3 py-1 text-xs font-medium text-amber-100">
-            Arbeitszeiten
+          <span
+            className={cn(
+              "inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
+              theme.badge.base
+            )}
+          >
+            {theme.labels.timeEntries}
           </span>
           <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
             Meine Arbeitszeiten
           </h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-            Erstelle, bearbeite und reiche deine Zeiten in einem klaren, warmen
-            Doppelweck-Stil ein.
+            Erstelle, bearbeite und reiche deine Zeiten in einem klaren Stil
+            ein.
           </p>
         </div>
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02]"
+          className={cn(
+            "inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold transition hover:scale-[1.02]",
+            theme.button.primary
+          )}
           aria-label="Neuer Eintrag"
         >
           + Neuer Eintrag
@@ -260,13 +271,20 @@ export default function TimeEntriesClient() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSubmitMonth(e.target.value)
                   }
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3",
+                    theme.input.base,
+                    theme.input.focus
+                  )}
                 />
               </div>
               <button
                 onClick={submitCurrentMonth}
                 disabled={submitting}
-                className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
+                className={cn(
+                  "rounded-2xl px-4 py-3 text-sm font-medium transition disabled:opacity-60",
+                  theme.button.secondary
+                )}
               >
                 {submitting ? "Reiche ein…" : "Monat einreichen"}
               </button>
@@ -288,13 +306,20 @@ export default function TimeEntriesClient() {
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setSubmitDay(e.target.value)
                   }
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                  className={cn(
+                    "w-full rounded-2xl px-4 py-3",
+                    theme.input.base,
+                    theme.input.focus
+                  )}
                 />
               </div>
               <button
                 onClick={submitSingleDay}
                 disabled={submittingDay}
-                className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/15 disabled:opacity-60"
+                className={cn(
+                  "rounded-2xl px-4 py-3 text-sm font-medium transition disabled:opacity-60",
+                  theme.button.secondary
+                )}
               >
                 {submittingDay ? "Reiche ein…" : "Tag einreichen"}
               </button>
@@ -304,7 +329,7 @@ export default function TimeEntriesClient() {
       )}
 
       {loading && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 text-sm text-zinc-300">
+        <div className={cn("mt-6 rounded-2xl px-4 py-4 text-sm text-zinc-300", theme.surface.softCard)}>
           Daten werden geladen…
         </div>
       )}
@@ -316,7 +341,7 @@ export default function TimeEntriesClient() {
       )}
 
       {!loading && entries.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm text-zinc-400">
+        <div className={cn("mt-6 rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
           Noch keine Einträge. Lege deinen ersten an.
         </div>
       )}
@@ -340,7 +365,7 @@ export default function TimeEntriesClient() {
               return (
                 <article
                   key={e.id}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm"
+                  className={cn("rounded-2xl p-4", theme.surface.softCard)}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -367,7 +392,10 @@ export default function TimeEntriesClient() {
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     <button
-                      className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                      className={cn(
+                        "rounded-xl px-3 py-2 text-sm disabled:opacity-40",
+                        theme.button.secondary
+                      )}
                       onClick={() => openEdit(e)}
                       disabled={locked}
                     >
@@ -381,13 +409,19 @@ export default function TimeEntriesClient() {
                     ) : confirmId === e.id ? (
                       <>
                         <button
-                          className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-sm",
+                            theme.button.danger
+                          )}
                           onClick={() => handleDelete(e.id)}
                         >
                           Löschen bestätigen
                         </button>
                         <button
-                          className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                          className={cn(
+                            "rounded-xl px-3 py-2 text-sm",
+                            theme.button.secondary
+                          )}
                           onClick={() => setConfirmId(null)}
                         >
                           Abbrechen
@@ -395,7 +429,10 @@ export default function TimeEntriesClient() {
                       </>
                     ) : (
                       <button
-                        className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                        className={cn(
+                          "rounded-xl px-3 py-2 text-sm",
+                          theme.button.danger
+                        )}
                         onClick={() => setConfirmId(e.id)}
                       >
                         Löschen
@@ -408,7 +445,7 @@ export default function TimeEntriesClient() {
           </div>
 
           <div className="mt-6 hidden overflow-x-auto md:block">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] backdrop-blur-sm">
+            <div className={cn("rounded-2xl", theme.surface.softCard)}>
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="border-b border-white/10 text-left text-zinc-400">
@@ -466,7 +503,10 @@ export default function TimeEntriesClient() {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex flex-wrap gap-2">
                             <button
-                              className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white disabled:opacity-40"
+                              className={cn(
+                                "rounded-xl px-3 py-2 text-sm disabled:opacity-40",
+                                theme.button.secondary
+                              )}
                               onClick={() => openEdit(e)}
                               disabled={locked}
                             >
@@ -480,13 +520,19 @@ export default function TimeEntriesClient() {
                             ) : confirmId === e.id ? (
                               <>
                                 <button
-                                  className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                  className={cn(
+                                    "rounded-xl px-3 py-2 text-sm",
+                                    theme.button.danger
+                                  )}
                                   onClick={() => handleDelete(e.id)}
                                 >
                                   Bestätigen
                                 </button>
                                 <button
-                                  className="rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-white"
+                                  className={cn(
+                                    "rounded-xl px-3 py-2 text-sm",
+                                    theme.button.secondary
+                                  )}
                                   onClick={() => setConfirmId(null)}
                                 >
                                   Abbrechen
@@ -494,7 +540,10 @@ export default function TimeEntriesClient() {
                               </>
                             ) : (
                               <button
-                                className="rounded-xl border border-red-400/20 bg-red-400/10 px-3 py-2 text-sm text-red-200"
+                                className={cn(
+                                  "rounded-xl px-3 py-2 text-sm",
+                                  theme.button.danger
+                                )}
                                 onClick={() => setConfirmId(e.id)}
                               >
                                 Löschen
@@ -520,10 +569,13 @@ export default function TimeEntriesClient() {
         >
           <form
             onSubmit={handleSave}
-            className="flex w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[#181310] shadow-2xl max-h-[calc(100svh-1rem)] md:max-h-[90svh]"
+            className={cn(
+              "flex w-full max-w-2xl max-h-[calc(100svh-1rem)] flex-col overflow-hidden rounded-[2rem] md:max-h-[90svh]",
+              theme.surface.modal
+            )}
           >
             <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.04),transparent_45%,rgba(255,248,240,0.02))]" />
+              <div className={cn("pointer-events-none absolute inset-0", theme.surface.overlay)} />
               <div className="relative">
                 <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-100">
                   Zeiteintrag
@@ -545,7 +597,11 @@ export default function TimeEntriesClient() {
                   <input
                     id="date"
                     type="date"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      theme.input.base,
+                      theme.input.focus
+                    )}
                     value={form.date}
                     onChange={(e) =>
                       setForm({ ...form, date: e.target.value })
@@ -559,7 +615,11 @@ export default function TimeEntriesClient() {
                     <input
                       id="start"
                       type="time"
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                      className={cn(
+                        "w-full rounded-2xl px-4 py-3",
+                        theme.input.base,
+                        theme.input.focus
+                      )}
                       value={form.start}
                       onChange={(e) =>
                         setForm({ ...form, start: e.target.value })
@@ -572,7 +632,11 @@ export default function TimeEntriesClient() {
                     <input
                       id="end"
                       type="time"
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                      className={cn(
+                        "w-full rounded-2xl px-4 py-3",
+                        theme.input.base,
+                        theme.input.focus
+                      )}
                       value={form.end}
                       onChange={(e) =>
                         setForm({ ...form, end: e.target.value })
@@ -582,7 +646,7 @@ export default function TimeEntriesClient() {
                   </FormField>
                 </div>
 
-                <div className="rounded-2xl border border-amber-200/15 bg-amber-100/10 px-4 py-3 text-sm text-amber-100">
+                <div className={cn("rounded-2xl border px-4 py-3 text-sm", theme.button.warning)}>
                   Dauer:{" "}
                   <span className="font-semibold">
                     {minutesToHHMM(durationMin)}
@@ -592,7 +656,11 @@ export default function TimeEntriesClient() {
                 <FormField label="Ort" htmlFor="location">
                   <input
                     id="location"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      theme.input.base,
+                      theme.input.focus
+                    )}
                     value={form.location}
                     onChange={(e) =>
                       setForm({ ...form, location: e.target.value })
@@ -604,7 +672,11 @@ export default function TimeEntriesClient() {
                 <FormField label="Kilometer" htmlFor="note">
                   <textarea
                     id="note"
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none placeholder:text-zinc-500 focus:border-amber-300/40 focus:ring-2 focus:ring-amber-100/10"
+                    className={cn(
+                      "w-full rounded-2xl px-4 py-3",
+                      theme.input.base,
+                      theme.input.focus
+                    )}
                     value={form.note}
                     onChange={(e) =>
                       setForm({ ...form, note: e.target.value })
@@ -616,11 +688,14 @@ export default function TimeEntriesClient() {
               </div>
             </div>
 
-            <div className="border-t border-white/10 bg-[#181310]/95 px-5 py-4 backdrop-blur sm:px-6">
+            <div className="border-t border-white/10 bg-black/10 px-5 py-4 backdrop-blur sm:px-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white transition hover:bg-white/10"
+                  className={cn(
+                    "rounded-2xl px-4 py-3 transition",
+                    theme.button.secondary
+                  )}
                   onClick={() => setOpen(false)}
                 >
                   Abbrechen
@@ -628,7 +703,10 @@ export default function TimeEntriesClient() {
                 <button
                   type="submit"
                   disabled={busy}
-                  className="rounded-2xl bg-gradient-to-r from-amber-200/90 via-orange-200/90 to-amber-100/90 px-5 py-3 font-semibold text-zinc-900 shadow-[0_10px_40px_rgba(217,119,6,0.20)] transition hover:scale-[1.02] disabled:opacity-70"
+                  className={cn(
+                    "rounded-2xl px-5 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70",
+                    theme.button.primary
+                  )}
                 >
                   {busy ? "Speichere…" : "Speichern"}
                 </button>
@@ -650,8 +728,10 @@ function ActionPanel({
   description: string;
   children: React.ReactNode;
 }) {
+  const theme = getThemeClasses();
+
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur-sm">
+    <div className={cn("rounded-2xl p-4", theme.surface.softCard)}>
       <h3 className="text-sm font-semibold text-white">{title}</h3>
       <p className="mt-1 text-sm leading-6 text-zinc-400">{description}</p>
       <div className="mt-4">{children}</div>
@@ -660,16 +740,21 @@ function ActionPanel({
 }
 
 function StatusBadge({ status }: { status: Status }) {
+  const theme = getThemeClasses();
+
   const map: Record<Status, string> = {
-    DRAFT: "border-white/10 bg-white/5 text-zinc-300",
-    SUBMITTED: "border-amber-200/20 bg-amber-100/10 text-amber-100",
-    APPROVED: "border-orange-300/20 bg-orange-300/10 text-orange-200",
-    REJECTED: "border-red-400/20 bg-red-400/10 text-red-200",
+    DRAFT: theme.status.draft,
+    SUBMITTED: theme.status.submitted,
+    APPROVED: theme.status.approved,
+    REJECTED: theme.status.rejected,
   };
 
   return (
     <span
-      className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${map[status]}`}
+      className={cn(
+        "inline-flex rounded-full border px-2.5 py-1 text-xs font-medium",
+        map[status]
+      )}
     >
       {status}
     </span>
