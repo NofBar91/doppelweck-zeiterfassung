@@ -11,7 +11,6 @@ import {
 import { getThemeClasses } from "@/lib/theme-classes";
 import { cn } from "@/lib/cn";
 
-type Role = "ADMIN" | "EMPLOYEE";
 type Status = "DRAFT" | "SUBMITTED" | "APPROVED" | "REJECTED";
 
 type UserLite = { id: string; name: string | null; email: string | null };
@@ -232,13 +231,7 @@ export default function TimeEntriesClient() {
   return (
     <main className="relative min-h-[100svh] overflow-x-hidden bg-[#0b0b0f] text-zinc-100">
       <div className="absolute inset-0">
-        <div
-          className={cn(
-            "absolute inset-0",
-            theme.background?.gradients ??
-              "bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.10),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.10),transparent_30%)]"
-          )}
-        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.10),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.10),transparent_30%)]" />
         <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:34px_34px]" />
       </div>
 
@@ -251,11 +244,21 @@ export default function TimeEntriesClient() {
           paddingRight: "max(1rem, env(safe-area-inset-right))",
         }}
       >
-        <section className={cn("overflow-hidden rounded-[2rem]", theme.surface.softCard)}>
+        <section
+          className={cn(
+            "overflow-hidden rounded-[2rem]",
+            theme.surface.softCard
+          )}
+        >
           <div className="relative">
             <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-amber-300/10 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-pink-300/10 blur-3xl" />
-            <div className={cn("pointer-events-none absolute inset-0", theme.surface.overlay)} />
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-0",
+                theme.surface.overlay
+              )}
+            />
 
             <div className="relative p-5 sm:p-8">
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
