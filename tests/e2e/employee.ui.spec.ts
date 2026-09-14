@@ -7,7 +7,7 @@ import { test, expect, type Page } from "@playwright/test";
 async function loginAs(page: Page, email: string, password: string) {
 await page.goto("/login");
 await page.getByLabel("E-Mail").fill(email);
-await page.getByLabel("Passwort").fill(password);
+await page.getByLabel("Passwort", { exact: true }).fill(password);
 await page.getByRole("button", { name: "Anmelden", exact: true }).click();
 await expect(page).toHaveURL(/\/dashboard/);
 }
@@ -42,7 +42,7 @@ await expect(page.locator("table").getByText("E2E UI Test")).toBeVisible();
 
 
 // Bearbeiten
-await page.locator("table").getByRole("button", { name: "Bearbeiten" }).first().click();
+await page.getByRole("row").filter({ hasText: "Testbüro" }).getByRole("button", { name: "Bearbeiten" }).click();
 await page.getByLabel("Bis").fill("11:00");
 await page.getByRole("button", { name: "Speichern" }).click();
 
@@ -52,7 +52,7 @@ await expect(page.locator("table").getByText("03:00")).toBeVisible();
 
 
 // Löschen
-await page.locator("table").getByRole("button", { name: "Löschen", exact: true }).first().click();
+await page.getByRole("row").filter({ hasText: "Testbüro" }).getByRole("button", { name: "Löschen", exact: true }).click();
 await page.getByRole("button", { name: "Löschen bestätigen" }).first().click();
 
 

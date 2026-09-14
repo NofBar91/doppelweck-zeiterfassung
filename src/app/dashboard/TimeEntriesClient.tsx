@@ -416,7 +416,7 @@ export default function TimeEntriesClient() {
                 <>
                   <div className="mt-6 grid gap-3 md:hidden">
                     {visibleEntries.map((e) => {
-                      const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+                      const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
                       const start = new Date(e.startUtc).toLocaleTimeString("de-DE", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -530,7 +530,7 @@ export default function TimeEntriesClient() {
                         </thead>
                         <tbody>
                           {visibleEntries.map((e) => {
-                            const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+                            const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
                             const start = new Date(e.startUtc).toLocaleTimeString(
                               [],
                               {

@@ -215,7 +215,7 @@ export default function AdminEntriesClient() {
     ];
 
     const rows = entries.map((e) => {
-      const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+      const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
       const start = new Date(e.startUtc).toLocaleTimeString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
@@ -451,7 +451,7 @@ export default function AdminEntriesClient() {
       {!loading && entries.length > 0 && (
         <div className="grid gap-3 xl:hidden">
           {entries.map((e) => {
-            const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+            const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
             const start = isoToLocalTimeInput(e.startUtc);
             const end = isoToLocalTimeInput(e.endUtc);
             const duration = minutesToHHMM(e.durationMin);
@@ -691,7 +691,7 @@ export default function AdminEntriesClient() {
               </thead>
               <tbody>
                 {entries.map((e) => {
-                  const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+                  const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
                   const start = isoToLocalTimeInput(e.startUtc);
                   const end = isoToLocalTimeInput(e.endUtc);
                   const duration = minutesToHHMM(e.durationMin);
