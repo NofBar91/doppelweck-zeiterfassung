@@ -46,6 +46,11 @@ test("mobile driver: create, filter, edit, submit and lock a tour", async ({ pag
   const submitted = page.locator("article").filter({ hasText: "05.09.2026" });
   await expect(submitted).toContainText("Eingereicht");
   await expect(submitted.getByRole("button", { name: "Bearbeiten" })).toBeDisabled();
+  const records = await (await page.request.get("/api/time-entries")).json();
+  const record = records.find((entry: { startUtc: string }) => entry.startUtc.startsWith("2026-09-05"));
+  expect(record).toBeTruthy();
+  expect((await page.request.patch(`/api/time-entries/${record.id}`, { data: { note: "Gesperrt" } })).status()).toBe(403);
+  expect((await page.request.delete(`/api/time-entries/${record.id}`)).status()).toBe(403);
   await page.screenshot({ path: "test-results/screenshots/driver-mobile.png", fullPage: true });
   await page.goto("/admin/users");
   await expect(page).toHaveURL(/\/dashboard$/);
