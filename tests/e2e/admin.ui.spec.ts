@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────────────────────
 // FILE: tests/e2e/admin.ui.spec.ts (E2E: Filter + Inline-Edit)
 // ─────────────────────────────────────────────────────────────
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
 
-async function loginAs(page, email: string, password: string) {
+async function loginAs(page: Page, email: string, password: string) {
 await page.goto("/login");
 await page.getByLabel("E-Mail").fill(email);
 await page.getByLabel("Passwort").fill(password);
-await page.getByRole("button", { name: "Login" }).click();
+await page.getByRole("button", { name: "Anmelden", exact: true }).click();
 await expect(page).toHaveURL(/\/dashboard/);
 }
 
@@ -18,16 +18,17 @@ test("Admin filtert nach Mitarbeiter und editiert Eintrag inline", async ({ page
 await loginAs(page, "max@example.com", "Mitarb!234");
 await page.goto("/dashboard");
 await page.getByRole("button", { name: "Neuer Eintrag" }).click();
-await page.getByLabel("Datum").fill("2025-01-23");
+await page.getByRole("dialog").getByLabel("Datum", { exact: true }).fill("2025-01-23");
 await page.getByLabel("Von").fill("09:00");
 await page.getByLabel("Bis").fill("10:00");
 await page.getByLabel("Ort").fill("Admin-Check");
 await page.getByRole("button", { name: "Speichern" }).click();
-await expect(page.getByText("Admin-Check")).toBeVisible();
+await expect(page.locator("table").getByText("Admin-Check")).toBeVisible();
 
 
 // Logout -> Admin Login
-await page.goto("/api/auth/signout?callbackUrl=/login");
+await page.getByRole("button", { name: "Abmelden" }).click();
+await expect(page).toHaveURL(/\/login/);
 await loginAs(page, "chef@example.com", "Admin!234");
 
 

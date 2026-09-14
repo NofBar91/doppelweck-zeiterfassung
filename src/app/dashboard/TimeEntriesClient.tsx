@@ -1,6 +1,9 @@
 "use client";
 
 import React from "react";
+import Modal from "@/components/ui/Modal";
+import Icon from "@/components/ui/Icon";
+import { statusLabels } from "@/lib/status";
 import {
   minutesToHHMM,
   toUtcIso,
@@ -91,6 +94,10 @@ export default function TimeEntriesClient() {
   const [open, setOpen] = React.useState(false);
   const [form, setForm] = React.useState<FormState>(defaultForm());
   const [busy, setBusy] = React.useState(false);
+  const [formError, setFormError] = React.useState<string | null>(null);
+  const [notice, setNotice] = React.useState<string | null>(null);
+  const [filterMonth, setFilterMonth] = React.useState("");
+  const [query, setQuery] = React.useState("");
   const [confirmId, setConfirmId] = React.useState<string | null>(null);
 
   const durationMin = React.useMemo(() => {
@@ -113,7 +120,7 @@ export default function TimeEntriesClient() {
   const [submitting, setSubmitting] = React.useState(false);
 
   async function submitCurrentMonth() {
-    if (!confirm(`Alle DRAFT/REJECTED-Einträge für ${submitMonth} einreichen?`))
+    if (!confirm(`Alle Entwürfe und zurückgegebenen Einträge für ${submitMonth} einreichen? Danach sind sie zur Prüfung gesperrt.`))
       return;
 
     setSubmitting(true);
@@ -136,7 +143,7 @@ export default function TimeEntriesClient() {
   const [submittingDay, setSubmittingDay] = React.useState(false);
 
   async function submitSingleDay() {
-    if (!confirm(`Alle DRAFT/REJECTED-Einträge am ${submitDay} einreichen?`))
+    if (!confirm(`Alle Entwürfe und zurückgegebenen Einträge am ${submitDay} einreichen? Danach sind sie zur Prüfung gesperrt.`))
       return;
 
     setSubmittingDay(true);
@@ -156,11 +163,13 @@ export default function TimeEntriesClient() {
   }
 
   function openCreate() {
+    setFormError(null);
     setForm(defaultForm());
     setOpen(true);
   }
 
   function openEdit(entry: Entry) {
+    setFormError(null);
     setForm({
       mode: "edit",
       id: entry.id,
@@ -177,14 +186,16 @@ export default function TimeEntriesClient() {
     ev.preventDefault();
     if (busy) return;
     setBusy(true);
+    setFormError(null);
 
     try {
+      if (durationMin <= 0) throw new Error("Das Ende muss nach dem Beginn liegen.");
       const payload = {
         workDate: dateOnlyUtcIso(form.date),
         startUtc: toUtcIso(form.date, form.start),
         endUtc: toUtcIso(form.date, form.end),
-        location: form.location || undefined,
-        note: form.note || undefined,
+        location: form.location,
+        note: form.note,
       };
 
       if (form.mode === "create") {
@@ -204,9 +215,10 @@ export default function TimeEntriesClient() {
       }
 
       setOpen(false);
+      setNotice("Deine Arbeitszeit wurde gespeichert.");
       await reload();
     } catch (e: unknown) {
-      alert(e instanceof Error ? e.message : "Fehler beim Speichern");
+      setFormError(e instanceof Error ? e.message : "Fehler beim Speichern");
     } finally {
       setBusy(false);
     }
@@ -228,31 +240,29 @@ export default function TimeEntriesClient() {
     }
   }
 
-  return (
-    <main className="relative min-h-[100svh] overflow-x-hidden bg-[#0b0b0f] text-zinc-100">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.10),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.10),transparent_30%)]" />
-        <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,white_1px,transparent_1px),linear-gradient(to_bottom,white_1px,transparent_1px)] bg-[size:34px_34px]" />
-      </div>
+  const monthEntries = entries.filter(e => isoToLocalDateInput(e.startUtc).startsWith(defaultMonth));
+  const visibleEntries = entries.filter(e =>
+    (!filterMonth || isoToLocalDateInput(e.startUtc).startsWith(filterMonth)) &&
+    (!query || `${e.location || ""} ${e.note || ""}`.toLocaleLowerCase("de-DE").includes(query.toLocaleLowerCase("de-DE")))
+  );
 
-      <div
-        className="relative z-10 mx-auto max-w-6xl px-4 py-5 sm:px-6 sm:py-8"
-        style={{
-          paddingTop: "max(1rem, env(safe-area-inset-top))",
-          paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-          paddingLeft: "max(1rem, env(safe-area-inset-left))",
-          paddingRight: "max(1rem, env(safe-area-inset-right))",
-        }}
-      >
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="dw-stat"><p className="dw-kicker">Stunden · dieser Monat</p><strong>{loading ? "—" : minutesToHHMM(monthEntries.reduce((sum, e) => sum + e.durationMin, 0))}<span className="ml-2 text-sm tracking-normal text-stone-500">h</span></strong></div>
+        <div className="dw-stat"><p className="dw-kicker">Touren · dieser Monat</p><strong>{loading ? "—" : monthEntries.length}</strong></div>
+        <div className="dw-stat"><p className="dw-kicker">Noch einzureichen</p><strong>{loading ? "—" : entries.filter(e => !e.status || e.status === "DRAFT" || e.status === "REJECTED").length}</strong></div>
+        <div className="dw-stat"><p className="dw-kicker">Freigegeben · Monat</p><strong>{loading ? "—" : minutesToHHMM(monthEntries.filter(e => e.status === "APPROVED").reduce((sum, e) => sum + e.durationMin, 0))}<span className="ml-2 text-sm tracking-normal text-stone-500">h</span></strong></div>
+      </div>
+      {notice && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{notice}</p>}
+      <div>
         <section
           className={cn(
-            "overflow-hidden rounded-[2rem]",
+            "overflow-hidden rounded-2xl",
             theme.surface.softCard
           )}
         >
           <div className="relative">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-amber-300/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-pink-300/10 blur-3xl" />
             <div
               className={cn(
                 "pointer-events-none absolute inset-0",
@@ -272,20 +282,19 @@ export default function TimeEntriesClient() {
                     {theme.labels.timeEntries}
                   </span>
 
-                  <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                    Meine Arbeitszeiten
+                  <h2 className="mt-3 text-2xl font-extrabold tracking-tight text-stone-900 sm:text-3xl">
+                    Deine Zeiteinträge
                   </h2>
 
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-400 sm:text-base">
-                    Erstelle, bearbeite und reiche deine Zeiten in einem klaren
-                    Stil ein.
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600 sm:text-base">
+                    Erfasse deine Tour. Prüfe deine Zeiten und reiche sie zur Freigabe ein.
                   </p>
                 </div>
 
                 <button
                   onClick={openCreate}
                   className={cn(
-                    "inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold transition hover:scale-[1.02]",
+                    "inline-flex items-center justify-center rounded-2xl px-5 py-3 font-semibold transition hover:brightness-95",
                     theme.button.primary
                   )}
                   aria-label="Neuer Eintrag"
@@ -294,18 +303,19 @@ export default function TimeEntriesClient() {
                 </button>
               </div>
 
-              {false && (
+              {entries.some(e => !e.status || e.status === "DRAFT" || e.status === "REJECTED") && (
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
                   <ActionPanel
                     title="Monat einreichen"
-                    description="Alle DRAFT- oder REJECTED-Einträge für einen Monat gesammelt absenden."
+                    description="Entwürfe und zurückgegebene Zeiten eines Monats zur Prüfung absenden."
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                       <div className="flex-1">
-                        <label className="mb-2 block text-sm font-medium text-zinc-300">
+                        <label htmlFor="submit-month" className="mb-2 block text-sm font-medium text-stone-600">
                           Monat
                         </label>
                         <input
+                          id="submit-month"
                           type="month"
                           value={submitMonth}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -337,10 +347,11 @@ export default function TimeEntriesClient() {
                   >
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                       <div className="flex-1">
-                        <label className="mb-2 block text-sm font-medium text-zinc-300">
+                        <label htmlFor="submit-day" className="mb-2 block text-sm font-medium text-stone-600">
                           Datum
                         </label>
                         <input
+                          id="submit-day"
                           type="date"
                           value={submitDay}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -368,10 +379,15 @@ export default function TimeEntriesClient() {
                 </div>
               )}
 
+              <div className="mt-6 flex flex-col gap-3 rounded-xl bg-stone-50 p-3 sm:flex-row sm:items-end">
+                <div className="flex-1"><label htmlFor="search-tour" className="dw-field">Tour suchen</label><input id="search-tour" type="search" className="dw-input w-full rounded-xl px-3 py-2" placeholder="Ort oder Kilometer durchsuchen" value={query} onChange={e=>setQuery(e.target.value)} /></div>
+                <div><label htmlFor="filter-month" className="dw-field">Zeitraum</label><input id="filter-month" type="month" className="dw-input w-full rounded-xl px-3 py-2" value={filterMonth} onChange={e=>setFilterMonth(e.target.value)} /></div>
+                {(filterMonth || query) && <button onClick={()=>{setFilterMonth(""); setQuery("");}} className="dw-secondary rounded-xl px-3 py-2 text-sm">Zurücksetzen</button>}
+              </div>
               {loading && (
                 <div
                   className={cn(
-                    "mt-6 rounded-2xl px-4 py-4 text-sm text-zinc-300",
+                    "mt-6 rounded-2xl px-4 py-4 text-sm text-stone-600",
                     theme.surface.softCard
                   )}
                 >
@@ -380,32 +396,32 @@ export default function TimeEntriesClient() {
               )}
 
               {error && (
-                <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+                <div className="mt-6 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-800">
                   {error}
                 </div>
               )}
 
-              {!loading && entries.length === 0 && (
+              {!loading && !error && visibleEntries.length === 0 && (
                 <div
                   className={cn(
-                    "mt-6 rounded-2xl px-4 py-5 text-sm text-zinc-400",
+                    "mt-6 rounded-2xl px-4 py-5 text-sm text-stone-600",
                     theme.surface.softCard
                   )}
                 >
-                  Noch keine Einträge. Lege deinen ersten an.
+                  <div className="dw-empty"><Icon name="truck" width="32" height="32"/><p className="font-semibold text-stone-800">{entries.length ? "Keine passenden Touren" : "Bereit für deine erste Tour?"}</p><p>{entries.length ? "Ändere den Zeitraum oder deinen Suchbegriff." : "Mit „Neuer Eintrag“ erfasst du Beginn, Ende und Kilometer."}</p></div>
                 </div>
               )}
 
-              {!loading && entries.length > 0 && (
+              {!loading && visibleEntries.length > 0 && (
                 <>
                   <div className="mt-6 grid gap-3 md:hidden">
-                    {entries.map((e) => {
-                      const date = new Date(e.startUtc).toLocaleDateString();
-                      const start = new Date(e.startUtc).toLocaleTimeString([], {
+                    {visibleEntries.map((e) => {
+                      const date = new Date(e.startUtc).toLocaleDateString("de-DE");
+                      const start = new Date(e.startUtc).toLocaleTimeString("de-DE", {
                         hour: "2-digit",
                         minute: "2-digit",
                       });
-                      const end = new Date(e.endUtc).toLocaleTimeString([], {
+                      const end = new Date(e.endUtc).toLocaleTimeString("de-DE", {
                         hour: "2-digit",
                         minute: "2-digit",
                       });
@@ -420,10 +436,10 @@ export default function TimeEntriesClient() {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="text-sm font-semibold text-white">
+                              <p className="text-sm font-semibold text-stone-900">
                                 {date}
                               </p>
-                              <p className="mt-1 text-xs text-zinc-400">
+                              <p className="mt-1 text-xs text-stone-600">
                                 {start} – {end}
                               </p>
                             </div>
@@ -456,7 +472,7 @@ export default function TimeEntriesClient() {
                             </button>
 
                             {locked ? (
-                              <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+                              <span className="inline-flex items-center rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-600">
                                 gesperrt
                               </span>
                             ) : confirmId === e.id ? (
@@ -501,7 +517,7 @@ export default function TimeEntriesClient() {
                     <div className={cn("rounded-2xl", theme.surface.softCard)}>
                       <table className="min-w-full text-sm">
                         <thead>
-                          <tr className="border-b border-white/10 text-left text-zinc-400">
+                          <tr className="border-b border-stone-200 text-left text-stone-600">
                             <th className="px-4 py-3">Datum</th>
                             <th className="px-4 py-3">Von</th>
                             <th className="px-4 py-3">Bis</th>
@@ -513,8 +529,8 @@ export default function TimeEntriesClient() {
                           </tr>
                         </thead>
                         <tbody>
-                          {entries.map((e) => {
-                            const date = new Date(e.startUtc).toLocaleDateString();
+                          {visibleEntries.map((e) => {
+                            const date = new Date(e.startUtc).toLocaleDateString("de-DE");
                             const start = new Date(e.startUtc).toLocaleTimeString(
                               [],
                               {
@@ -522,7 +538,7 @@ export default function TimeEntriesClient() {
                                 minute: "2-digit",
                               }
                             );
-                            const end = new Date(e.endUtc).toLocaleTimeString([], {
+                            const end = new Date(e.endUtc).toLocaleTimeString("de-DE", {
                               hour: "2-digit",
                               minute: "2-digit",
                             });
@@ -533,7 +549,7 @@ export default function TimeEntriesClient() {
                             return (
                               <tr
                                 key={e.id}
-                                className="border-b border-white/10 align-top last:border-b-0"
+                                className="border-b border-stone-200 align-top last:border-b-0"
                               >
                                 <td className="px-4 py-3 whitespace-nowrap">
                                   {date}
@@ -572,7 +588,7 @@ export default function TimeEntriesClient() {
                                     </button>
 
                                     {locked ? (
-                                      <span className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400">
+                                      <span className="inline-flex items-center rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-600">
                                         gesperrt
                                       </span>
                                     ) : confirmId === e.id ? (
@@ -584,7 +600,7 @@ export default function TimeEntriesClient() {
                                           )}
                                           onClick={() => handleDelete(e.id)}
                                         >
-                                          Bestätigen
+                                          Löschen bestätigen
                                         </button>
                                         <button
                                           className={cn(
@@ -624,19 +640,15 @@ export default function TimeEntriesClient() {
       </div>
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-          role="dialog"
-          aria-modal="true"
-        >
+        <Modal onClose={() => setOpen(false)} busy={busy} labelledBy="entry-title">
           <form
             onSubmit={handleSave}
             className={cn(
-              "flex max-h-[92svh] w-full flex-col overflow-hidden rounded-t-[2rem] border shadow-2xl sm:max-w-xl sm:rounded-[2rem]",
+              "flex max-h-[92svh] w-full flex-col overflow-hidden rounded-2xl border shadow-2xl sm:max-w-xl sm:rounded-2xl",
               theme.surface.modal
             )}
           >
-            <div className="relative border-b border-white/10 px-5 py-4 sm:px-6">
+            <div className="relative border-b border-stone-200 px-5 py-4 sm:px-6">
               <div
                 className={cn(
                   "pointer-events-none absolute inset-0",
@@ -644,21 +656,22 @@ export default function TimeEntriesClient() {
                 )}
               />
               <div className="relative">
-                <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-100">
+                <p className="text-xs font-medium uppercase tracking-[0.18em] text-amber-900">
                   Zeiteintrag
                 </p>
-                <h3 className="mt-2 text-xl font-bold text-white">
+                <h3 id="entry-title" className="mt-2 text-xl font-bold text-stone-900">
                   {form.mode === "create"
                     ? "Neuen Eintrag anlegen"
                     : "Eintrag bearbeiten"}
                 </h3>
-                <p className="mt-1 text-sm text-zinc-400">
-                  Kompakt, klar und auf Desktop wie Mobile gut bedienbar.
+                <p className="mt-1 text-sm text-stone-600">
+                  Trage die tatsächlichen Zeiten deiner Tour ein.
                 </p>
               </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-6">
+              {formError && <p role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{formError}</p>}
               <div className="space-y-4">
                 <FormField label="Datum" htmlFor="date">
                   <input
@@ -753,14 +766,14 @@ export default function TimeEntriesClient() {
                     onChange={(e) =>
                       setForm({ ...form, note: e.target.value })
                     }
-                    rows={4}
+                    rows={2}
                     placeholder="z. B. gefahrene Kilometer"
                   />
                 </FormField>
               </div>
             </div>
 
-            <div className="sticky bottom-0 border-t border-white/10 bg-black/10 px-5 py-4 backdrop-blur sm:px-6">
+            <div className="sticky bottom-0 border-t border-stone-200 bg-stone-50 px-5 py-4 backdrop-blur sm:px-6">
               <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
                 <button
                   type="button"
@@ -769,14 +782,15 @@ export default function TimeEntriesClient() {
                     theme.button.secondary
                   )}
                   onClick={() => setOpen(false)}
+                  disabled={busy}
                 >
                   Abbrechen
                 </button>
                 <button
                   type="submit"
-                  disabled={busy}
+                  disabled={busy || durationMin <= 0}
                   className={cn(
-                    "rounded-2xl px-5 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70",
+                    "rounded-2xl px-5 py-3 font-semibold transition hover:brightness-95 disabled:opacity-70",
                     theme.button.primary
                   )}
                 >
@@ -785,9 +799,9 @@ export default function TimeEntriesClient() {
               </div>
             </div>
           </form>
-        </div>
+        </Modal>
       )}
-    </main>
+    </div>
   );
 }
 
@@ -804,8 +818,8 @@ function ActionPanel({
 
   return (
     <div className={cn("rounded-2xl p-4", theme.surface.softCard)}>
-      <h3 className="text-sm font-semibold text-white">{title}</h3>
-      <p className="mt-1 text-sm leading-6 text-zinc-400">{description}</p>
+      <h3 className="text-sm font-semibold text-stone-900">{title}</h3>
+      <p className="mt-1 text-sm leading-6 text-stone-600">{description}</p>
       <div className="mt-4">{children}</div>
     </div>
   );
@@ -828,7 +842,7 @@ function StatusBadge({ status }: { status: Status }) {
         map[status]
       )}
     >
-      {status}
+      {statusLabels[status]}
     </span>
   );
 }
@@ -844,10 +858,10 @@ function InfoPair({
 }) {
   return (
     <div className={className}>
-      <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+      <p className="text-xs uppercase tracking-[0.15em] text-stone-500">
         {label}
       </p>
-      <p className="mt-1 text-sm text-zinc-200">{value}</p>
+      <p className="mt-1 text-sm text-stone-800">{value}</p>
     </div>
   );
 }
@@ -865,7 +879,7 @@ function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-2 block text-sm font-medium text-zinc-300"
+        className="mb-2 block text-sm font-medium text-stone-600"
       >
         {label}
       </label>

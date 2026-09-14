@@ -1,47 +1,40 @@
 name: CI
-
 on:
   push:
-    branches: [ "master" ]
+    branches: [main, master]
   pull_request:
-    branches: [ "master" ]
-
+    branches: [main, master]
+permissions:
+  contents: read
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
-
-    # Nur Secrets, KEIN NODE_ENV hier
+    timeout-minutes: 15
     env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: disposable-ci-test-secret-not-for-production
+      NEXT_TELEMETRY_DISABLED: '1'
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
-
-      # Debug: zeigen, dass die Dateien da sind
-      - name: Show workspace
-        run: |
-          pwd
-          ls -la
-          ls -la prisma || true
-
-      - name: Install dependencies
-        run: npm ci
-
-      # Prisma Client (Postgres-Schema)
-      - name: Generate Prisma Client
-        run: npx prisma generate --schema prisma/schema.postgres.prisma
-
-      # Migrationen einspielen (nur vorhandene; ohne Datenverlust)
-      - name: Run Prisma Migrations
-        run: npx prisma migrate deploy --schema prisma/schema.postgres.prisma
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Prepare isolated test database
+        run: npm run test:e2e:prepare
+      - run: npm run lint
+      - run: npx vitest run
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Test driver and administration workflows
+        run: npm run e2e
+      - name: Upload browser report and responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doppelweck-ui-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

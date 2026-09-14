@@ -13,7 +13,7 @@ const envPath = process.env.PRISMA_SCHEMA_PATH?.trim();
 const candidates = [
   envPath,
   "prisma/schema.postgres.prisma", // bevorzugt in Vercel
-  "prisma/schema.sqlite.sprisma"   // Fallback (lokal/dev)
+  "prisma/schema.sqlite.prisma"   // Fallback (lokal/dev)
 ].filter(Boolean);
 
 // 3) Ersten existenten Pfad wählen

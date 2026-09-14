@@ -1,10 +1,10 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 
-async function loginAs(page, email: string, password: string) {
+async function loginAs(page: Page, email: string, password: string) {
   await page.goto("/login");
   await page.getByLabel("E-Mail").fill(email);
   await page.getByLabel("Passwort").fill(password);
-  await page.getByRole("button", { name: "Login" }).click();
+  await page.getByRole("button", { name: "Anmelden", exact: true }).click();
   await expect(page).toHaveURL(/\/dashboard/);
 }
 
@@ -79,7 +79,8 @@ test("admin can edit employee's entry and audit log is written", async ({ page }
   const created = await resCreate.json();
 
   // logout, login as admin
-  await page.goto("/api/auth/signout?callbackUrl=/login");
+  await page.getByRole("button", { name: "Abmelden" }).click();
+await expect(page).toHaveURL(/\/login/);
   await loginAs(page, "chef@example.com", "Admin!234");
 
   // admin updates entry to longer span
