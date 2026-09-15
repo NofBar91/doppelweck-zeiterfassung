@@ -47,3 +47,9 @@ test-results/
 # Mac / Windows
 .DS_Store
 Thumbs.db
+
+# Isolated test data and browser reports
+.e2e/
+playwright-report/
+test-results/
+*.tsbuildinfo

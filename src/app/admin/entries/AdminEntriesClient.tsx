@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { statusLabels } from "@/lib/status";
 import {
   minutesToHHMM,
   isoToLocalDateInput,
@@ -214,12 +215,12 @@ export default function AdminEntriesClient() {
     ];
 
     const rows = entries.map((e) => {
-      const date = new Date(e.startUtc).toLocaleDateString();
-      const start = new Date(e.startUtc).toLocaleTimeString([], {
+      const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+      const start = new Date(e.startUtc).toLocaleTimeString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
       });
-      const end = new Date(e.endUtc).toLocaleTimeString([], {
+      const end = new Date(e.endUtc).toLocaleTimeString("de-DE", {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -263,17 +264,17 @@ export default function AdminEntriesClient() {
   return (
     <div className="space-y-5">
       {/* Filter */}
-      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
+      <section className={cn("rounded-2xl p-4 sm:p-5", theme.surface.softCard)}>
         <div className="mb-4 flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-white">Filter</h2>
-            <p className="text-sm text-zinc-400">
+            <h2 className="text-lg font-semibold text-stone-900">Filter</h2>
+            <p className="text-sm text-stone-600">
               Mitarbeiter, Zeitraum, Ort und Status eingrenzen.
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
           <FormField label="Mitarbeiter" htmlFor="filter-user">
             <select
               id="filter-user"
@@ -338,7 +339,7 @@ export default function AdminEntriesClient() {
             />
           </FormField>
 
-          <div className="md:col-span-2">
+          <div className="lg:col-span-2">
             <FormField label="Ort enthält" htmlFor="filter-location">
               <input
                 id="filter-location"
@@ -347,7 +348,7 @@ export default function AdminEntriesClient() {
                   theme.input.base,
                   theme.input.focus
                 )}
-                placeholder="z. B. Büro"
+                placeholder="z. B. Beckingen"
                 value={filters.location || ""}
                 onChange={(e) =>
                   setFilters((f) => ({
@@ -376,16 +377,16 @@ export default function AdminEntriesClient() {
               }
             >
               <option value="">Alle</option>
-              <option value="DRAFT">DRAFT</option>
-              <option value="SUBMITTED">SUBMITTED</option>
-              <option value="APPROVED">APPROVED</option>
-              <option value="REJECTED">REJECTED</option>
+              <option value="DRAFT">Entwurf</option>
+              <option value="SUBMITTED">Eingereicht</option>
+              <option value="APPROVED">Freigegeben</option>
+              <option value="REJECTED">Zurückgegeben</option>
             </select>
           </FormField>
         </div>
 
         {usersError && (
-          <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+          <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-800">
             Mitarbeiter konnten nicht geladen werden: {usersError}
           </div>
         )}
@@ -394,13 +395,13 @@ export default function AdminEntriesClient() {
       {/* Toolbar */}
       <section
         className={cn(
-          "flex flex-col gap-3 rounded-[1.5rem] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5",
+          "flex flex-col gap-3 rounded-2xl p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5",
           theme.surface.softCard
         )}
       >
-        <p className="text-sm text-zinc-300">
-          Summe: <span className="font-semibold text-white">{total} h</span>{" "}
-          <span className="text-zinc-500">({entries.length} Einträge)</span>
+        <p className="text-sm text-stone-600">
+          Summe: <span className="font-semibold text-stone-900">{total} h</span>{" "}
+          <span className="text-stone-500">({entries.length} Einträge)</span>
         </p>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -425,7 +426,7 @@ export default function AdminEntriesClient() {
           <button
             onClick={exportCsv}
             className={cn(
-              "rounded-2xl px-4 py-3 text-sm font-semibold transition hover:scale-[1.02]",
+              "rounded-2xl px-4 py-3 text-sm font-semibold transition hover:brightness-95",
               theme.button.primary
             )}
           >
@@ -435,13 +436,13 @@ export default function AdminEntriesClient() {
       </section>
 
       {loading && (
-        <div className={cn("rounded-2xl px-4 py-4 text-sm text-zinc-300", theme.surface.softCard)}>
+        <div className={cn("rounded-2xl px-4 py-4 text-sm text-stone-600", theme.surface.softCard)}>
           Daten werden geladen…
         </div>
       )}
 
       {error && (
-        <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+        <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-800">
           {error}
         </div>
       )}
@@ -450,7 +451,7 @@ export default function AdminEntriesClient() {
       {!loading && entries.length > 0 && (
         <div className="grid gap-3 xl:hidden">
           {entries.map((e) => {
-            const date = new Date(e.startUtc).toLocaleDateString();
+            const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
             const start = isoToLocalTimeInput(e.startUtc);
             const end = isoToLocalTimeInput(e.endUtc);
             const duration = minutesToHHMM(e.durationMin);
@@ -460,12 +461,12 @@ export default function AdminEntriesClient() {
             return (
               <article
                 key={e.id}
-                className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
+                className={cn("rounded-2xl p-4", theme.surface.softCard)}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-sm font-semibold text-white">{date}</p>
-                    <p className="mt-1 text-sm text-zinc-400">
+                    <p className="text-sm font-semibold text-stone-900">{date}</p>
+                    <p className="mt-1 text-sm text-stone-600">
                       {e.user?.name ?? e.user?.email ?? e.userId}
                     </p>
                   </div>
@@ -493,7 +494,7 @@ export default function AdminEntriesClient() {
                 </div>
 
                 {isEditing && edit ? (
-                  <div className="mt-4 space-y-3 rounded-2xl border border-white/10 bg-black/20 p-3">
+                  <div className="mt-4 space-y-3 rounded-2xl border border-stone-200 bg-stone-50 p-3">
                     <div className="grid gap-3 sm:grid-cols-2">
                       <FormField label="Von" htmlFor={`start-${e.id}`}>
                         <input
@@ -672,10 +673,10 @@ export default function AdminEntriesClient() {
       {/* Desktop Table */}
       {!loading && entries.length > 0 && (
         <div className="hidden overflow-x-auto xl:block">
-          <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
+          <div className={cn("rounded-2xl", theme.surface.softCard)}>
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10 text-left text-zinc-400">
+                <tr className="border-b border-stone-200 text-left text-stone-600">
                   <th className="px-4 py-3">Datum</th>
                   <th className="px-4 py-3">Mitarbeiter</th>
                   <th className="px-4 py-3">Von</th>
@@ -690,7 +691,7 @@ export default function AdminEntriesClient() {
               </thead>
               <tbody>
                 {entries.map((e) => {
-                  const date = new Date(e.startUtc).toLocaleDateString();
+                  const date = new Date(e.startUtc).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
                   const start = isoToLocalTimeInput(e.startUtc);
                   const end = isoToLocalTimeInput(e.endUtc);
                   const duration = minutesToHHMM(e.durationMin);
@@ -700,7 +701,7 @@ export default function AdminEntriesClient() {
                   return (
                     <tr
                       key={e.id}
-                      className="border-b border-white/10 align-top last:border-b-0"
+                      className="border-b border-stone-200 align-top last:border-b-0"
                     >
                       <td className="px-4 py-3 whitespace-nowrap">{date}</td>
                       <td className="px-4 py-3 whitespace-nowrap">
@@ -914,7 +915,7 @@ export default function AdminEntriesClient() {
       )}
 
       {!loading && entries.length === 0 && (
-        <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
+        <div className={cn("rounded-2xl px-4 py-5 text-sm text-stone-600", theme.surface.softCard)}>
           Keine Einträge für die aktuellen Filter.
         </div>
       )}
@@ -935,7 +936,7 @@ function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-2 block text-sm font-medium text-zinc-300"
+        className="mb-2 block text-sm font-medium text-stone-600"
       >
         {label}
       </label>
@@ -965,7 +966,7 @@ function StatusBadge({
         map[status]
       )}
     >
-      {status}
+      {statusLabels[status]}
     </span>
   );
 }
@@ -981,10 +982,10 @@ function InfoPair({
 }) {
   return (
     <div className={className}>
-      <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+      <p className="text-xs uppercase tracking-[0.15em] text-stone-500">
         {label}
       </p>
-      <p className="mt-1 text-sm text-zinc-200">{value}</p>
+      <p className="mt-1 text-sm text-stone-800">{value}</p>
     </div>
   );
 }

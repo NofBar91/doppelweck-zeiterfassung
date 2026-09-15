@@ -38,9 +38,9 @@ export async function PATCH(
 
   const currentStatus = (existing.status ?? "DRAFT") as TES;
 
-  // APPROVED ist für Nicht-Admin gesperrt
-  if (currentStatus === "APPROVED" && !isAdmin(session)) {
-    return new Response("Eintrag ist freigegeben und gesperrt.", { status: 403 });
+  // Eingereichte und freigegebene Zeiten bleiben bis zur Rückgabe gesperrt.
+  if ((currentStatus === "SUBMITTED" || currentStatus === "APPROVED") && !isAdmin(session)) {
+    return new Response("Eintrag ist eingereicht oder freigegeben und gesperrt.", { status: 403 });
   }
 
   // Nicht-Admin darf Status nur DRAFT/REJECTED -> SUBMITTED wechseln
@@ -141,6 +141,10 @@ export async function DELETE(
   const existing = await prisma.timeEntry.findUnique({ where: { id } });
   if (!existing) return new Response("Not found", { status: 404 });
   if (!canEditEntry(session, existing.userId)) return new Response("Forbidden", { status: 403 });
+
+  if (!isAdmin(session) && (existing.status === "SUBMITTED" || existing.status === "APPROVED")) {
+    return new Response("Eintrag ist eingereicht oder freigegeben und gesperrt.", { status: 403 });
+  }
 
   await prisma.timeEntry.delete({ where: { id } });
 

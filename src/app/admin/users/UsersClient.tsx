@@ -242,22 +242,22 @@ export default function UsersClient() {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-200">
+        <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-4 text-sm text-red-800">
           {error}
         </div>
       )}
 
       {loading && (
-        <div className={cn("rounded-2xl px-4 py-4 text-sm text-zinc-300", theme.surface.softCard)}>
+        <div className={cn("rounded-2xl px-4 py-4 text-sm text-stone-600", theme.surface.softCard)}>
           Daten werden geladen…
         </div>
       )}
 
-      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
-        <h2 className="text-lg font-semibold text-white">
+      <section className={cn("rounded-2xl p-4 sm:p-5", theme.surface.softCard)}>
+        <h2 className="text-lg font-semibold text-stone-900">
           Mitarbeiter direkt anlegen
         </h2>
-        <p className="mt-1 text-sm leading-6 text-zinc-400">
+        <p className="mt-1 text-sm leading-6 text-stone-600">
           Lege Mitarbeiter direkt mit Passwort und Rolle an.
         </p>
 
@@ -311,8 +311,8 @@ export default function UsersClient() {
                 value={directRole}
                 onChange={(e) => setDirectRole(e.target.value as Role)}
               >
-                <option value="EMPLOYEE">EMPLOYEE</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="EMPLOYEE">Fahrerteam</option>
+                <option value="ADMIN">Verwaltung</option>
               </select>
             </FormField>
           </div>
@@ -343,7 +343,7 @@ export default function UsersClient() {
             <button
               disabled={busyCreate}
               className={cn(
-                "w-full rounded-2xl px-4 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70 md:w-auto",
+                "w-full rounded-2xl px-4 py-3 font-semibold transition hover:brightness-95 disabled:opacity-70 md:w-auto",
                 theme.button.primary
               )}
             >
@@ -352,20 +352,20 @@ export default function UsersClient() {
           </div>
         </form>
 
-        <p className="mt-4 text-xs leading-5 text-zinc-500">
+        <p className="mt-4 text-xs leading-5 text-stone-500">
           Hinweis: Beim direkten Anlegen vergibst du das Passwort. Alternativ
           kannst du unten eine Einladung senden, damit der Mitarbeiter sein
           Passwort selbst setzt.
         </p>
       </section>
 
-      <section className={cn("rounded-[1.5rem] p-4 sm:p-5", theme.surface.softCard)}>
+      <section className={cn("rounded-2xl p-4 sm:p-5", theme.surface.softCard)}>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-stone-900">
               Nutzer einladen
             </h2>
-            <p className="mt-1 text-sm leading-6 text-zinc-400">
+            <p className="mt-1 text-sm leading-6 text-stone-600">
               Erzeuge einen Einladungslink für neue Mitarbeiter.
             </p>
           </div>
@@ -416,8 +416,8 @@ export default function UsersClient() {
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as Role)}
               >
-                <option value="EMPLOYEE">EMPLOYEE</option>
-                <option value="ADMIN">ADMIN</option>
+                <option value="EMPLOYEE">Fahrerteam</option>
+                <option value="ADMIN">Verwaltung</option>
               </select>
             </FormField>
           </div>
@@ -425,7 +425,7 @@ export default function UsersClient() {
           <button
             disabled={busyInvite}
             className={cn(
-              "rounded-2xl px-4 py-3 font-semibold transition hover:scale-[1.02] disabled:opacity-70",
+              "rounded-2xl px-4 py-3 font-semibold transition hover:brightness-95 disabled:opacity-70",
               theme.button.primary
             )}
           >
@@ -448,16 +448,16 @@ export default function UsersClient() {
 
       <section className="space-y-3">
         <div>
-          <h3 className="text-lg font-semibold text-white">
+          <h3 className="text-lg font-semibold text-stone-900">
             Offene Einladungen
           </h3>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-stone-600">
             Noch nicht eingelöste Einladungslinks.
           </p>
         </div>
 
         {invites.length === 0 ? (
-          <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
+          <div className={cn("rounded-2xl px-4 py-5 text-sm text-stone-600", theme.surface.softCard)}>
             Keine offenen Einladungen.
           </div>
         ) : (
@@ -471,11 +471,11 @@ export default function UsersClient() {
                 return (
                   <article
                     key={inv.id}
-                    className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
+                    className={cn("rounded-2xl p-4", theme.surface.softCard)}
                   >
                     <div className="space-y-3">
                       <InfoPair label="E-Mail" value={inv.email} />
-                      <InfoPair label="Rolle" value={inv.role} />
+                      <InfoPair label="Rolle" value={inv.role === "ADMIN" ? "Verwaltung" : "Fahrerteam"} />
                       <InfoPair
                         label="Erstellt"
                         value={new Date(inv.createdAt).toLocaleString()}
@@ -515,10 +515,10 @@ export default function UsersClient() {
             </div>
 
             <div className="hidden overflow-x-auto lg:block">
-              <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
+              <div className={cn("rounded-2xl", theme.surface.softCard)}>
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/10 text-left text-zinc-400">
+                    <tr className="border-b border-stone-200 text-left text-stone-600">
                       <th className="px-4 py-3">E-Mail</th>
                       <th className="px-4 py-3">Rolle</th>
                       <th className="px-4 py-3">Erstellt</th>
@@ -536,10 +536,10 @@ export default function UsersClient() {
                       return (
                         <tr
                           key={inv.id}
-                          className="border-b border-white/10 last:border-b-0"
+                          className="border-b border-stone-200 last:border-b-0"
                         >
                           <td className="px-4 py-3">{inv.email}</td>
-                          <td className="px-4 py-3">{inv.role}</td>
+                          <td className="px-4 py-3">{inv.role === "ADMIN" ? "Verwaltung" : "Fahrerteam"}</td>
                           <td className="px-4 py-3">
                             {new Date(inv.createdAt).toLocaleString()}
                           </td>
@@ -584,14 +584,14 @@ export default function UsersClient() {
 
       <section className="space-y-3">
         <div>
-          <h3 className="text-lg font-semibold text-white">Alle Nutzer</h3>
-          <p className="text-sm text-zinc-400">
+          <h3 className="text-lg font-semibold text-stone-900">Alle Mitarbeiter</h3>
+          <p className="text-sm text-stone-600">
             Rollen ändern, Passwort-Reset auslösen oder Nutzer entfernen.
           </p>
         </div>
 
         {users.length === 0 ? (
-          <div className={cn("rounded-2xl px-4 py-5 text-sm text-zinc-400", theme.surface.softCard)}>
+          <div className={cn("rounded-2xl px-4 py-5 text-sm text-stone-600", theme.surface.softCard)}>
             Keine Nutzer gefunden.
           </div>
         ) : (
@@ -600,7 +600,7 @@ export default function UsersClient() {
               {users.map((u) => (
                 <article
                   key={u.id}
-                  className={cn("rounded-[1.5rem] p-4", theme.surface.softCard)}
+                  className={cn("rounded-2xl p-4", theme.surface.softCard)}
                 >
                   <div className="space-y-3">
                     <InfoPair label="Name" value={u.name || "—"} />
@@ -619,8 +619,8 @@ export default function UsersClient() {
                         value={u.role}
                         onChange={(e) => updateRole(u.id, e.target.value as Role)}
                       >
-                        <option value="EMPLOYEE">EMPLOYEE</option>
-                        <option value="ADMIN">ADMIN</option>
+                        <option value="EMPLOYEE">Fahrerteam</option>
+                        <option value="ADMIN">Verwaltung</option>
                       </select>
                     </FormField>
                   </div>
@@ -634,7 +634,7 @@ export default function UsersClient() {
                       )}
                       onClick={() => sendReset(u.email)}
                     >
-                      Passwort-Reset senden
+                      Passwortlink senden
                     </button>
 
                     <button
@@ -653,10 +653,10 @@ export default function UsersClient() {
             </div>
 
             <div className="hidden overflow-x-auto lg:block">
-              <div className={cn("rounded-[1.5rem]", theme.surface.softCard)}>
+              <div className={cn("rounded-2xl", theme.surface.softCard)}>
                 <table className="min-w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/10 text-left text-zinc-400">
+                    <tr className="border-b border-stone-200 text-left text-stone-600">
                       <th className="px-4 py-3">Name</th>
                       <th className="px-4 py-3">E-Mail</th>
                       <th className="px-4 py-3">Rolle</th>
@@ -667,12 +667,13 @@ export default function UsersClient() {
                     {users.map((u) => (
                       <tr
                         key={u.id}
-                        className="border-b border-white/10 last:border-b-0"
+                        className="border-b border-stone-200 last:border-b-0"
                       >
                         <td className="px-4 py-3">{u.name || "—"}</td>
                         <td className="px-4 py-3">{u.email}</td>
                         <td className="px-4 py-3">
                           <select
+                            aria-label={`Rolle für ${u.name || u.email}`}
                             className={cn(
                               "rounded-xl px-3 py-2",
                               theme.input.base,
@@ -683,8 +684,8 @@ export default function UsersClient() {
                               updateRole(u.id, e.target.value as Role)
                             }
                           >
-                            <option value="EMPLOYEE">EMPLOYEE</option>
-                            <option value="ADMIN">ADMIN</option>
+                            <option value="EMPLOYEE">Fahrerteam</option>
+                            <option value="ADMIN">Verwaltung</option>
                           </select>
                         </td>
                         <td className="px-4 py-3">
@@ -697,7 +698,7 @@ export default function UsersClient() {
                               )}
                               onClick={() => sendReset(u.email)}
                             >
-                              Passwort-Reset senden
+                              Passwortlink senden
                             </button>
 
                             <button
@@ -738,7 +739,7 @@ function FormField({
     <div>
       <label
         htmlFor={htmlFor}
-        className="mb-2 block text-sm font-medium text-zinc-300"
+        className="mb-2 block text-sm font-medium text-stone-600"
       >
         {label}
       </label>
@@ -756,10 +757,10 @@ function InfoPair({
 }) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-[0.15em] text-zinc-500">
+      <p className="text-xs uppercase tracking-[0.15em] text-stone-500">
         {label}
       </p>
-      <p className="mt-1 break-words text-sm text-zinc-200">{value}</p>
+      <p className="mt-1 break-words text-sm text-stone-800">{value}</p>
     </div>
   );
 }
